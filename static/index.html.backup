@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌵 Kaktus Anzucht System</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        }
+        
+        /* CSS Classes */
+        .container { max-width: 1200px; margin: 0 auto; padding: 1rem; }
+        .bg-gradient { background: linear-gradient(135deg, #60a5fa 0%, #a855f7 50%, #7c3aed 100%); min-height: 100vh; }
+        .card { background: white; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); overflow: hidden; }
+        .header { background: linear-gradient(45deg, #166534, #15803d); color: white; padding: 1.5rem; }
+        .header-flex { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .header-center { flex: 1; text-align: center; min-width: 300px; }
+        .sync-area { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+        .sync-status { display: flex; align-items: center; gap: 0.5rem; }
+        .btn { padding: 0.5rem 1rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+        .btn-blue { background: #2563eb; color: white; }
+        .btn-blue:hover { background: #1d4ed8; }
+        .btn-green { background: #16a34a; color: white; }
+        .btn-green:hover { background: #15803d; }
+        .btn-red { background: #dc2626; color: white; }
+        .btn-red:hover { background: #b91c1c; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .tabs { display: flex; background: #f3f4f6; border-bottom: 1px solid #d1d5db; overflow-x: auto; flex-wrap: wrap; }
+        .tab { min-width: 100px; padding: 1rem; background: #f3f4f6; border: none; cursor: pointer; font-weight: 600; transition: all 0.2s; flex-grow: 1; }
+        .tab:hover { background: #e5e7eb; }
+        .tab.active { background: white; color: #166534; border-bottom: 4px solid #16a34a; }
+        .content { padding: 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        .label { display: block; margin-bottom: 0.5rem; font-weight: 600; color: #374151; }
+        .input, .select, .textarea { width: 100%; padding: 0.75rem; border: 2px solid #d1d5db; border-radius: 6px; font-size: 1rem; box-sizing: border-box; }
+        .input:focus, .select:focus, .textarea:focus { outline: none; border-color: #16a34a; }
+        .grid { display: grid; gap: 1.5rem; }
+        .grid-2 { grid-template-columns: 1fr 1fr; }
+        .grid-3 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+        .grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+        .card-small { background: white; padding: 1rem; border-radius: 8px; border: 1px solid #e5e7eb; }
+        .text-center { text-align: center; }
+        .text-green { color: #16a34a; }
+        .text-blue { color: #2563eb; }
+        .text-red { color: #dc2626; }
+        .text-yellow { color: #ca8a04; }
+        .text-gray { color: #6b7280; }
+        .font-bold { font-weight: 700; }
+        .text-2xl { font-size: 1.5rem; }
+        .text-3xl { font-size: 1.875rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mt-4 { margin-top: 1rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .space-y-6 > * + * { margin-top: 1.5rem; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+        .gap-2 { gap: 0.5rem; }
+        .gap-4 { gap: 1rem; }
+        .w-full { width: 100%; }
+        .hidden { display: none; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { padding: 0.75rem; border: 1px solid #d1d5db; text-align: left; }
+        .table th { background: #166534; color: white; font-weight: 600; cursor: pointer; user-select: none; }
+        .table th:hover { background: #15803d; }
+        .table tr:nth-child(even) { background: #f9fafb; }
+        
+        /* Neue Styles */
+        .care-task { padding: 0.75rem; margin-bottom: 0.5rem; border-radius: 6px; display: flex; align-items: start; gap: 0.5rem; }
+        .care-task.high { background: #fee2e2; border: 1px solid #fecaca; }
+        .care-task.medium { background: #fef3c7; border: 1px solid #fde68a; }
+        .care-task.low { background: #dbeafe; border: 1px solid #bfdbfe; }
+        .sort-arrow { font-size: 0.75rem; margin-left: 0.25rem; }
+        .badge { padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; }
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
+        .info-box { background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+        
+        @media (max-width: 768px) {
+            .header-flex { flex-direction: column; text-align: center; gap: 1rem; }
+            .grid-2 { grid-template-columns: 1fr; }
+            .tabs { font-size: 0.875rem; }
+            .tab { min-width: 80px; padding: 0.75rem 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+        
+        // Simple SVG Icons
+        const Plus = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>;
+        const Trash2 = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3,6 5,6 21,6"></polyline><path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>;
+        const Download = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7,10 12,15 17,10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>;
+        const Sprout = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M7 20h10"></path><path d="M10 20c5.5-2.5.8-6.4 3-10"></path><path d="M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z"></path><path d="M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.7 4.3-1.4 1-1.1 1.6-2.7 1.7-4.9-2.7.1-4 1-4.9 2.3z"></path></svg>;
+        const Droplet = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path></svg>;
+
+        const KaktusCenterApp = () => {
+            // State
+            const [species, setSpecies] = useState([]);
+            const [sowings, setSowings] = useState([]);
+            const [plants, setPlants] = useState([]);
+            const [diaryEntries, setDiaryEntries] = useState([]);
+            const [activeTab, setActiveTab] = useState('dashboard');
+            const [loading, setLoading] = useState(true);
+            const [stats, setStats] = useState(null);
+            const [careSchedule, setCareSchedule] = useState(null);
+            const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' });
+            
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Form States
+            const [sowingForm, setSowingForm] = useState({
+                species: '',
+                sowing_date: today,
+                seed_count: '',
+                pot_number: '',
+                notes: ''
+            });
+            
+            const [plantForm, setPlantForm] = useState({
+                species: '',
+                purchase_date: today,
+                location: '',
+                substrate: 'Mineralisch',
+                notes: ''
+            });
+            
+            const [diaryForm, setDiaryForm] = useState({
+                date: today,
+                species: '',
+                note: '',
+                entry_type: 'general'
+            });
+            
+            const [speciesForm, setSpeciesForm] = useState({
+                name: '',
+                substrate: 'Mineralisch',
+                temperature: '20-25°C',
+                germination_time: '1-4 Wochen',
+                care_notes: '',
+                temperature_min: 20,
+                temperature_max: 25,
+                watering_summer: 'Mäßig, wenn Substrat trocken',
+                watering_winter: 'Sehr sparsam bis gar nicht',
+                light_requirements: 'Hell, aber keine pralle Mittagssonne',
+                special_care: ''
+            });
+            
+            // Load data
+            useEffect(() => {
+                loadAllData();
+            }, []);
+            
+            const loadAllData = async () => {
+                setLoading(true);
+                try {
+                    const [speciesRes, sowingsRes, plantsRes, diaryRes, statsRes, careRes] = await Promise.all([
+                        fetch('/api/species').then(r => r.json()),
+                        fetch('/api/sowings').then(r => r.json()),
+                        fetch('/api/plants').then(r => r.json()),
+                        fetch('/api/diary').then(r => r.json()),
+                        fetch('/api/dashboard-stats').then(r => r.json()),
+                        fetch('/api/care-schedule').then(r => r.json())
+                    ]);
+                    
+                    setSpecies(speciesRes);
+                    setSowings(sowingsRes);
+                    setPlants(plantsRes);
+                    setDiaryEntries(diaryRes);
+                    setStats(statsRes);
+                    setCareSchedule(careRes);
+                } catch (error) {
+                    console.error('Fehler beim Laden:', error);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            
+            // Sorting function
+            const handleSort = (key) => {
+                let direction = 'asc';
+                if (sortConfig.key === key && sortConfig.direction === 'asc') {
+                    direction = 'desc';
+                }
+                setSortConfig({ key, direction });
+            };
+            
+            const sortData = (data, key) => {
+                const sorted = [...data];
+                if (sortConfig.key === key) {
+                    sorted.sort((a, b) => {
+                        const aVal = key.includes('.') ? key.split('.').reduce((o, k) => o[k], a) : a[key];
+                        const bVal = key.includes('.') ? key.split('.').reduce((o, k) => o[k], b) : b[key];
+                        
+                        if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+                        if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+                        return 0;
+                    });
+                }
+                return sorted;
+            };
+            
+            // CRUD Functions
+            const addSpecies = async () => {
+                if (!speciesForm.name) {
+                    alert('Bitte Artennamen eingeben!');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/species', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(speciesForm)
+                    });
+                    
+                    if (response.ok) {
+                        alert('Art erfolgreich hinzugefügt!');
+                        setSpeciesForm({
+                            name: '',
+                            substrate: 'Mineralisch',
+                            temperature: '20-25°C',
+                            germination_time: '1-4 Wochen',
+                            care_notes: '',
+                            temperature_min: 20,
+                            temperature_max: 25,
+                            watering_summer: 'Mäßig, wenn Substrat trocken',
+                            watering_winter: 'Sehr sparsam bis gar nicht',
+                            light_requirements: 'Hell, aber keine pralle Mittagssonne',
+                            special_care: ''
+                        });
+                        loadAllData();
+                    } else {
+                        const error = await response.json();
+                        alert(error.error || 'Fehler beim Hinzufügen');
+                    }
+                } catch (error) {
+                    alert('Fehler beim Hinzufügen der Art');
+                }
+            };
+            
+            const deleteSpecies = async (id) => {
+                if (!confirm('Diese Art wirklich löschen? Alle zugehörigen Aussaaten und Pflanzen werden ebenfalls gelöscht!')) {
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`/api/species/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        loadAllData();
+                    } else {
+                        const error = await response.json();
+                        alert(error.error || 'Fehler beim Löschen');
+                    }
+                } catch (error) {
+                    alert('Fehler beim Löschen');
+                }
+            };
+            
+            const addSowing = async () => {
+                if (!sowingForm.species || !sowingForm.seed_count || !sowingForm.pot_number) {
+                    alert('Bitte alle Pflichtfelder ausfüllen!');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/sowings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(sowingForm)
+                    });
+                    
+                    if (response.ok) {
+                        alert('Aussaat erfolgreich hinzugefügt!');
+                        setSowingForm({
+                            species: '',
+                            sowing_date: today,
+                            seed_count: '',
+                            pot_number: '',
+                            notes: ''
+                        });
+                        loadAllData();
+                    }
+                } catch (error) {
+                    alert('Fehler beim Speichern');
+                }
+            };
+            
+            const deleteSowing = async (id) => {
+                if (!confirm('Diese Aussaat wirklich löschen?')) {
+                    return;
+                }
+                
+                try {
+                    await fetch(`/api/sowings/${id}`, { method: 'DELETE' });
+                    loadAllData();
+                } catch (error) {
+                    alert('Fehler beim Löschen');
+                }
+            };
+            
+            const addPlant = async () => {
+                if (!plantForm.species) {
+                    alert('Bitte Art auswählen!');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/plants', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(plantForm)
+                    });
+                    
+                    if (response.ok) {
+                        alert('Pflanze erfolgreich hinzugefügt!');
+                        setPlantForm({
+                            species: '',
+                            purchase_date: today,
+                            location: '',
+                            substrate: 'Mineralisch',
+                            notes: ''
+                        });
+                        loadAllData();
+                    }
+                } catch (error) {
+                    alert('Fehler beim Speichern');
+                }
+            };
+            
+            const deletePlant = async (id) => {
+                if (!confirm('Diese Pflanze wirklich löschen?')) {
+                    return;
+                }
+                
+                try {
+                    await fetch(`/api/plants/${id}`, { method: 'DELETE' });
+                    loadAllData();
+                } catch (error) {
+                    alert('Fehler beim Löschen');
+                }
+            };
+            
+            const updatePlantWatering = async (id) => {
+                try {
+                    await fetch(`/api/plants/${id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ last_watered: true })
+                    });
+                    loadAllData();
+                } catch (error) {
+                    alert('Fehler beim Aktualisieren');
+                }
+            };
+            
+            const updatePlantFertilizing = async (id) => {
+                try {
+                    await fetch(`/api/plants/${id}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ last_fertilized: true })
+                    });
+                    loadAllData();
+                } catch (error) {
+                    alert('Fehler beim Aktualisieren');
+                }
+            };
+            
+            const addDiaryEntry = async () => {
+                if (!diaryForm.note) {
+                    alert('Bitte eine Notiz eingeben!');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch('/api/diary', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(diaryForm)
+                    });
+                    
+                    if (response.ok) {
+                        alert('Tagebucheintrag gespeichert!');
+                        setDiaryForm({
+                            date: today,
+                            species: '',
+                            note: '',
+                            entry_type: 'general'
+                        });
+                        loadAllData();
+                    }
+                } catch (error) {
+                    alert('Fehler beim Speichern');
+                }
+            };
+            
+            const deleteDiaryEntry = async (id) => {
+                if (!confirm('Diesen Eintrag wirklich löschen?')) {
+                    return;
+                }
+                
+                try {
+                    await fetch(`/api/diary/${id}`, { method: 'DELETE' });
+                    loadAllData();
+                } catch (error) {
+                    alert('Fehler beim Löschen');
+                }
+            };
+            
+            const updateGermination = async (sowingId) => {
+                const sowing = sowings.find(s => s.id === sowingId);
+                const germinatedCount = prompt(`Wie viele der ${sowing.seed_count} Samen sind gekeimt?`);
+                
+                if (germinatedCount !== null && germinatedCount !== '') {
+                    try {
+                        const response = await fetch(`/api/sowings/${sowingId}/germinate`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                germination_date: today,
+                                germinated_count: parseInt(germinatedCount)
+                            })
+                        });
+                        
+                        if (response.ok) {
+                            alert('Keimung erfolgreich vermerkt!');
+                            loadAllData();
+                        }
+                    } catch (error) {
+                        alert('Fehler beim Aktualisieren');
+                    }
+                }
+            };
+            
+            // Render functions
+            const renderDashboard = () => (
+                <div className="space-y-4">
+                    <h2 className="text-2xl font-bold text-green">📊 Dashboard</h2>
+                    
+                    {stats && (
+                        <>
+                            <div className="grid grid-4">
+                                <div className="card-small text-center">
+                                    <div className="text-3xl font-bold text-green">{stats.overview.total_species}</div>
+                                    <div>Arten</div>
+                                </div>
+                                <div className="card-small text-center">
+                                    <div className="text-3xl font-bold text-blue">{stats.overview.total_sowings}</div>
+                                    <div>Aussaaten</div>
+                                </div>
+                                <div className="card-small text-center">
+                                    <div className="text-3xl font-bold text-green">{stats.overview.total_plants}</div>
+                                    <div>Pflanzen</div>
+                                </div>
+                                <div className="card-small text-center">
+                                    <div className="text-3xl font-bold text-blue">{stats.overview.total_diary_entries}</div>
+                                    <div>Tagebuch</div>
+                                </div>
+                            </div>
+                            
+                            {stats.care_alerts && stats.care_alerts.length > 0 && (
+                                <div className="card-small">
+                                    <h3 className="font-bold mb-4">🔔 Pflegeerinnerungen</h3>
+                                    {stats.care_alerts.map((alert, i) => (
+                                        <div key={i} className={`care-task ${alert.type}`}>
+                                            {alert.type === 'info' && '📘'} 
+                                            {alert.type === 'warning' && '⚠️'} 
+                                            {alert.type === 'success' && '✅'} 
+                                            <span>{alert.message}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            <div className="grid grid-2 gap-4">
+                                <div className="card-small">
+                                    <h3 className="font-bold mb-4">📅 Letzte 30 Tage</h3>
+                                    <div>Neue Aussaaten: <span className="font-bold text-green">{stats.recent.sowings_this_month}</span></div>
+                                    <div>Keimungen: <span className="font-bold text-blue">{stats.recent.germinations_this_month}</span></div>
+                                </div>
+                                
+                                <div className="card-small">
+                                    <h3 className="font-bold mb-4">🌱 Aktive Keimungen</h3>
+                                    {sowings.filter(s => !s.germinated).slice(0, 3).map(s => (
+                                        <div key={s.id} style={{fontSize: '0.875rem', marginBottom: '0.25rem'}}>
+                                            {s.species_name} - Tag {s.days_since_sowing}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </>
+                    )}
+                </div>
+            );
+            
+            const renderSpecies = () => {
+                const sortedSpecies = sortData(species, sortConfig.key);
+                
+                return (
+                    <div className="space-y-6">
+                        <h2 className="text-2xl font-bold text-green">🌵 Artenliste</h2>
+                        
+                        {/* Neue Art hinzufügen */}
+                        <div className="card-small">
+                            <h3 className="font-bold mb-4">Neue Art hinzufügen</h3>
+                            <div className="grid grid-2 gap-4">
+                                <div className="form-group">
+                                    <label className="label">Name der Art:</label>
+                                    <input 
+                                        type="text"
+                                        value={speciesForm.name}
+                                        onChange={(e) => setSpeciesForm({...speciesForm, name: e.target.value})}
+                                        className="input"
+                                        placeholder="z.B. Mammillaria hahniana"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">Substrat:</label>
+                                    <input 
+                                        type="text"
+                                        value={speciesForm.substrate}
+                                        onChange={(e) => setSpeciesForm({...speciesForm, substrate: e.target.value})}
+                                        className="input"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">Temperatur:</label>
+                                    <input 
+                                        type="text"
+                                        value={speciesForm.temperature}
+                                        onChange={(e) => setSpeciesForm({...speciesForm, temperature: e.target.value})}
+                                        className="input"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">Keimdauer:</label>
+                                    <input 
+                                        type="text"
+                                        value={speciesForm.germination_time}
+                                        onChange={(e) => setSpeciesForm({...speciesForm, germination_time: e.target.value})}
+                                        className="input"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">Gießen Sommer:</label>
+                                    <input 
+                                        type="text"
+                                        value={speciesForm.watering_summer}
+                                        onChange={(e) => setSpeciesForm({...speciesForm, watering_summer: e.target.value})}
+                                        className="input"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">Gießen Winter:</label>
+                                    <input 
+                                        type="text"
+                                        value={speciesForm.watering_winter}
+                                        onChange={(e) => setSpeciesForm({...speciesForm, watering_winter: e.target.value})}
+                                        className="input"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">Lichtbedarf:</label>
+                                    <input 
+                                        type="text"
+                                        value={speciesForm.light_requirements}
+                                        onChange={(e) => setSpeciesForm({...speciesForm, light_requirements: e.target.value})}
+                                        className="input"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">Min/Max Temperatur:</label>
+                                    <div className="flex gap-2">
+                                        <input 
+                                            type="number"
+                                            value={speciesForm.temperature_min}
+                                            onChange={(e) => setSpeciesForm({...speciesForm, temperature_min: parseInt(e.target.value)})}
+                                            className="input"
+                                            style={{width: '50%'}}
+                                            placeholder="Min"
+                                        />
+                                        <input 
+                                            type="number"
+                                            value={speciesForm.temperature_max}
+                                            onChange={(e) => setSpeciesForm({...speciesForm, temperature_max: parseInt(e.target.value)})}
+                                            className="input"
+                                            style={{width: '50%'}}
+                                            placeholder="Max"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Pflegehinweise:</label>
+                                <textarea 
+                                    value={speciesForm.care_notes}
+                                    onChange={(e) => setSpeciesForm({...speciesForm, care_notes: e.target.value})}
+                                    className="textarea"
+                                    rows="3"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Besondere Pflegehinweise:</label>
+                                <textarea 
+                                    value={speciesForm.special_care}
+                                    onChange={(e) => setSpeciesForm({...speciesForm, special_care: e.target.value})}
+                                    className="textarea"
+                                    rows="2"
+                                />
+                            </div>
+                            <button onClick={addSpecies} className="btn btn-green">
+                                <Plus /> Art hinzufügen
+                            </button>
+                        </div>
+                        
+                        {/* Artenliste */}
+                        <div style={{overflowX: 'auto'}}>
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th onClick={() => handleSort('name')}>
+                                            Art {sortConfig.key === 'name' && <span className="sort-arrow">{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>}
+                                        </th>
+                                        <th onClick={() => handleSort('substrate')}>
+                                            Substrat {sortConfig.key === 'substrate' && <span className="sort-arrow">{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>}
+                                        </th>
+                                        <th onClick={() => handleSort('temperature')}>
+                                            Temperatur {sortConfig.key === 'temperature' && <span className="sort-arrow">{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>}
+                                        </th>
+                                        <th onClick={() => handleSort('germination_time')}>
+                                            Keimdauer {sortConfig.key === 'germination_time' && <span className="sort-arrow">{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>}
+                                        </th>
+                                        <th>Aktionen</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {sortedSpecies.map(sp => (
+                                        <tr key={sp.id}>
+                                            <td className="font-bold">
+                                                {sp.name}
+                                                {sp.user_created && <span className="badge badge-success" style={{marginLeft: '0.5rem'}}>Eigene</span>}
+                                            </td>
+                                            <td>{sp.substrate}</td>
+                                            <td>{sp.temperature}</td>
+                                            <td>{sp.germination_time}</td>
+                                            <td>
+                                                {sp.user_created && (
+                                                    <button
+                                                        onClick={() => deleteSpecies(sp.id)}
+                                                        className="btn btn-red"
+                                                        style={{padding: '0.25rem 0.5rem'}}
+                                                    >
+                                                        <Trash2 />
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                );
+            };
+            
+            const renderSowings = () => {
+                const sortedSowings = sortData(sowings, sortConfig.key);
+                
+                return (
+                    <div className="space-y-6">
+                        <h2 className="text-2xl font-bold text-green">🌱 Aussaat-Tracking</h2>
+                        
+                        <div className="card-small">
+                            <h3 className="font-bold mb-4">Neue Aussaat</h3>
+                            <div className="grid grid-2 gap-4">
+                                <div className="form-group">
+                                    <label className="label">Art:</label>
+                                    <select 
+                                        value={sowingForm.species}
+                                        onChange={(e) => setSowingForm({...sowingForm, species: e.target.value})}
+                                        className="select"
+                                    >
+                                        <option value="">-- Art wählen --</option>
+                                        {species.map(sp => (
+                                            <option key={sp.id} value={sp.id}>{sp.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">Datum:</label>
+                                    <input 
+                                        type="date"
+                                        value={sowingForm.sowing_date}
+                                        onChange={(e) => setSowingForm({...sowingForm, sowing_date: e.target.value})}
+                                        className="input"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">Anzahl Samen:</label>
+                                    <input 
+                                        type="number"
+                                        value={sowingForm.seed_count}
+                                        onChange={(e) => setSowingForm({...sowingForm, seed_count: e.target.value})}
+                                        className="input"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">Topf Nr.:</label>
+                                    <input 
+                                        type="text"
+                                        value={sowingForm.pot_number}
+                                        onChange={(e) => setSowingForm({...sowingForm, pot_number: e.target.value})}
+                                        className="input"
+                                    />
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Notizen:</label>
+                                <textarea 
+                                    value={sowingForm.notes}
+                                    onChange={(e) => setSowingForm({...sowingForm, notes: e.target.value})}
+                                    className="textarea"
+                                    rows="2"
+                                />
+                            </div>
+                            <button onClick={addSowing} className="btn btn-green">
+                                <Plus /> Aussaat hinzufügen
+                            </button>
+                        </div>
+                        
+                        <div>
+                            <h3 className="font-bold mb-4">Aktuelle Aussaaten</h3>
+                            {sowings.length === 0 ? (
+                                <p className="text-center">Noch keine Aussaaten vorhanden.</p>
+                            ) : (
+                                <div style={{overflowX: 'auto'}}>
+                                    <table className="table">
+                                        <thead>
+                                            <tr>
+                                                <th onClick={() => handleSort('species_name')}>
+                                                    Art {sortConfig.key === 'species_name' && <span className="sort-arrow">{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>}
+                                                </th>
+                                                <th onClick={() => handleSort('sowing_date')}>
+                                                    Datum {sortConfig.key === 'sowing_date' && <span className="sort-arrow">{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>}
+                                                </th>
+                                                <th>Topf</th>
+                                                <th>Samen</th>
+                                                <th>Status</th>
+                                                <th onClick={() => handleSort('days_since_sowing')}>
+                                                    Tage {sortConfig.key === 'days_since_sowing' && <span className="sort-arrow">{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>}
+                                                </th>
+                                                <th>Keimrate</th>
+                                                <th>Aktionen</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {sortedSowings.map(sowing => (
+                                                <tr key={sowing.id}>
+                                                    <td className="font-bold">{sowing.species_name}</td>
+                                                    <td>{sowing.sowing_date}</td>
+                                                    <td>{sowing.pot_number}</td>
+                                                    <td>{sowing.seed_count}</td>
+                                                    <td>
+                                                        <span className={`badge ${sowing.germinated ? 'badge-success' : 'badge-warning'}`}>
+                                                            {sowing.germinated ? 'Gekeimt' : 'Wartend'}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        {sowing.days_since_sowing} Tage
+                                                        {sowing.days_until_germination && (
+                                                            <div style={{fontSize: '0.75rem', color: '#16a34a'}}>
+                                                                Keimung nach {sowing.days_until_germination} Tagen
+                                                            </div>
+                                                        )}
+                                                    </td>
+                                                    <td>{sowing.germinated ? `${sowing.germination_rate}%` : '-'}</td>
+                                                    <td>
+                                                        <div className="flex gap-2">
+                                                            {!sowing.germinated && (
+                                                                <button
+                                                                    onClick={() => updateGermination(sowing.id)}
+                                                                    className="btn btn-blue"
+                                                                    style={{padding: '0.25rem 0.5rem'}}
+                                                                >
+                                                                    <Sprout />
+                                                                </button>
+                                                            )}
+                                                            <button
+                                                                onClick={() => deleteSowing(sowing.id)}
+                                                                className="btn btn-red"
+                                                                style={{padding: '0.25rem 0.5rem'}}
+                                                            >
+                                                                <Trash2 />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
+            };
+            
+            const renderPlants = () => {
+                const sortedPlants = sortData(plants, sortConfig.key);
+                
+                return (
+                    <div className="space-y-6">
+                        <h2 className="text-2xl font-bold text-green">🌿 Pflanzenbestand</h2>
+                        
+                        <div className="card-small">
+                            <h3 className="font-bold mb-4">Neue Pflanze</h3>
+                            <div className="grid grid-2 gap-4">
+                                <div className="form-group">
+                                    <label className="label">Art:</label>
+                                    <select 
+                                        value={plantForm.species}
+                                        onChange={(e) => setPlantForm({...plantForm, species: e.target.value})}
+                                        className="select"
+                                    >
+                                        <option value="">-- Art wählen --</option>
+                                        {species.map(sp => (
+                                            <option key={sp.id} value={sp.id}>{sp.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">Kaufdatum:</label>
+                                    <input 
+                                        type="date"
+                                        value={plantForm.purchase_date}
+                                        onChange={(e) => setPlantForm({...plantForm, purchase_date: e.target.value})}
+                                        className="input"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">Standort:</label>
+                                    <input 
+                                        type="text"
+                                        value={plantForm.location}
+                                        onChange={(e) => setPlantForm({...plantForm, location: e.target.value})}
+                                        className="input"
+                                        placeholder="z.B. Südfenster"
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label className="label">Substrat:</label>
+                                    <select 
+                                        value={plantForm.substrate}
+                                        onChange={(e) => setPlantForm({...plantForm, substrate: e.target.value})}
+                                        className="select"
+                                    >
+                                        <option value="Mineralisch">Mineralisch</option>
+                                        <option value="Mineralisch mit organischem Anteil">Mineralisch mit organischem Anteil</option>
+                                        <option value="Standard Kakteenerde">Standard Kakteenerde</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <button onClick={addPlant} className="btn btn-green">
+                                <Plus /> Pflanze hinzufügen
+                            </button>
+                        </div>
+                        
+                        <div>
+                            <h3 className="font-bold mb-4">Bestand ({plants.length})</h3>
+                            {plants.length === 0 ? (
+                                <p className="text-center">Noch keine Pflanzen im Bestand.</p>
+                            ) : (
+                                <div style={{overflowX: 'auto'}}>
+                                    <table className="table">
+                                        <thead>
+                                            <tr>
+                                                <th onClick={() => handleSort('species_name')}>
+                                                    Art {sortConfig.key === 'species_name' && <span className="sort-arrow">{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>}
+                                                </th>
+                                                <th onClick={() => handleSort('purchase_date')}>
+                                                    Kaufdatum {sortConfig.key === 'purchase_date' && <span className="sort-arrow">{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>}
+                                                </th>
+                                                <th>Standort</th>
+                                                <th>Substrat</th>
+                                                <th onClick={() => handleSort('days_in_collection')}>
+                                                    Im Bestand {sortConfig.key === 'days_in_collection' && <span className="sort-arrow">{sortConfig.direction === 'asc' ? '▲' : '▼'}</span>}
+                                                </th>
+                                                <th>Pflege</th>
+                                                <th>Aktionen</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {sortedPlants.map(plant => (
+                                                <tr key={plant.id}>
+                                                    <td className="font-bold">{plant.species_name}</td>
+                                                    <td>{plant.purchase_date}</td>
+                                                    <td>{plant.location}</td>
+                                                    <td>{plant.substrate}</td>
+                                                    <td>{plant.days_in_collection} Tage</td>
+                                                    <td>
+                                                        <div style={{fontSize: '0.875rem'}}>
+                                                            {plant.last_watered ? (
+                                                                <div>💧 vor {plant.days_since_watering} Tagen</div>
+                                                            ) : (
+                                                                <div className="text-red">💧 Nie gegossen</div>
+                                                            )}
+                                                            {plant.last_fertilized ? (
+                                                                <div>🌿 Gedüngt: {plant.last_fertilized}</div>
+                                                            ) : (
+                                                                <div className="text-gray">🌿 Nie gedüngt</div>
+                                                            )}
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div className="flex gap-2">
+                                                            <button
+                                                                onClick={() => updatePlantWatering(plant.id)}
+                                                                className="btn btn-blue"
+                                                                style={{padding: '0.25rem 0.5rem'}}
+                                                                title="Als gegossen markieren"
+                                                            >
+                                                                <Droplet />
+                                                            </button>
+                                                            <button
+                                                                onClick={() => updatePlantFertilizing(plant.id)}
+                                                                className="btn btn-green"
+                                                                style={{padding: '0.25rem 0.5rem'}}
+                                                                title="Als gedüngt markieren"
+                                                            >
+                                                                🌿
+                                                            </button>
+                                                            <button
+                                                                onClick={() => deletePlant(plant.id)}
+                                                                className="btn btn-red"
+                                                                style={{padding: '0.25rem 0.5rem'}}
+                                                            >
+                                                                <Trash2 />
+                                                            </button>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
+            };
+            
+            const renderCare = () => (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-green">🌡️ Pflegeplan</h2>
+                    
+                    {careSchedule && (
+                        <>
+                            {/* Tägliche Aufgaben */}
+                            {careSchedule.daily.length > 0 && (
+                                <div className="card-small">
+                                    <h3 className="font-bold mb-4">📅 Tägliche Aufgaben</h3>
+                                    {careSchedule.daily.map((task, i) => (
+                                        <div key={i} className={`care-task ${task.priority}`}>
+                                            <input type="checkbox" style={{marginTop: '0.25rem'}} />
+                                            <div style={{flex: 1}}>
+                                                <div className="font-bold">{task.task}</div>
+                                                <div style={{fontSize: '0.875rem', opacity: 0.8}}>{task.details}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            {/* Wöchentliche Aufgaben */}
+                            {careSchedule.weekly.length > 0 && (
+                                <div className="card-small">
+                                    <h3 className="font-bold mb-4">📆 Wöchentliche Aufgaben</h3>
+                                    {careSchedule.weekly.map((task, i) => (
+                                        <div key={i} className={`care-task ${task.priority}`}>
+                                            <input type="checkbox" style={{marginTop: '0.25rem'}} />
+                                            <div style={{flex: 1}}>
+                                                <div className="font-bold">{task.task}</div>
+                                                <div style={{fontSize: '0.875rem', opacity: 0.8}}>{task.details}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            {/* Monatliche Aufgaben */}
+                            {careSchedule.monthly.length > 0 && (
+                                <div className="card-small">
+                                    <h3 className="font-bold mb-4">🗓️ Monatliche Aufgaben</h3>
+                                    {careSchedule.monthly.map((task, i) => (
+                                        <div key={i} className={`care-task ${task.priority}`}>
+                                            <input type="checkbox" style={{marginTop: '0.25rem'}} />
+                                            <div style={{flex: 1}}>
+                                                <div className="font-bold">{task.task}</div>
+                                                <div style={{fontSize: '0.875rem', opacity: 0.8}}>{task.details}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                            
+                            {/* Saisonale Aufgaben */}
+                            {careSchedule.seasonal.length > 0 && (
+                                <div className="card-small">
+                                    <h3 className="font-bold mb-4">🍂 Saisonale Aufgaben</h3>
+                                    {careSchedule.seasonal.map((task, i) => (
+                                        <div key={i} className={`care-task ${task.priority}`}>
+                                            <input type="checkbox" style={{marginTop: '0.25rem'}} />
+                                            <div style={{flex: 1}}>
+                                                <div className="font-bold">{task.task}</div>
+                                                <div style={{fontSize: '0.875rem', opacity: 0.8}}>{task.details}</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </>
+                    )}
+                    
+                    {/* Pflegedetails für jede Art */}
+                    <div className="card-small">
+                        <h3 className="font-bold mb-4">📋 Artspezifische Pflegeinformationen</h3>
+                        <div className="space-y-4">
+                            {species.slice(0, 5).map(sp => (
+                                <div key={sp.id} className="info-box">
+                                    <h4 className="font-bold text-green">{sp.name}</h4>
+                                    <div className="grid grid-2 gap-2" style={{fontSize: '0.875rem', marginTop: '0.5rem'}}>
+                                        <div><strong>Sommer:</strong> {sp.watering_summer}</div>
+                                        <div><strong>Winter:</strong> {sp.watering_winter}</div>
+                                        <div><strong>Licht:</strong> {sp.light_requirements}</div>
+                                        <div><strong>Temperatur:</strong> {sp.temperature}</div>
+                                    </div>
+                                    {sp.special_care && (
+                                        <div style={{marginTop: '0.5rem', fontSize: '0.875rem'}}>
+                                            <strong>Besonderheiten:</strong> {sp.special_care}
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            );
+            
+            const renderInfo = () => (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-green">ℹ️ Grundlegende Informationen</h2>
+                    
+                    <div className="grid grid-2 gap-4">
+                        <div className="card-small">
+                            <h3 className="font-bold mb-4">🌱 Aussaat-Grundlagen</h3>
+                            <ul className="space-y-2" style={{listStyle: 'none', paddingLeft: 0}}>
+                                <li>✓ Verwenden Sie mineralisches Substrat (Bims, Lava, Quarzsand)</li>
+                                <li>✓ Samen nur auf das Substrat legen, nicht bedecken (Lichtkeimer)</li>
+                                <li>✓ Hohe Luftfeuchtigkeit (90%+) für Keimung essentiell</li>
+                                <li>✓ Konstante Temperatur wichtig (Tag/Nacht-Schwankung ok)</li>
+                                <li>✓ Geduld - manche Arten brauchen Monate!</li>
+                                <li>✓ Keimbehälter erst nach 8-10 Wochen langsam öffnen</li>
+                            </ul>
+                        </div>
+                        
+                        <div className="card-small">
+                            <h3 className="font-bold mb-4">💧 Gießregeln</h3>
+                            <ul className="space-y-2" style={{listStyle: 'none', paddingLeft: 0}}>
+                                <li>✓ Im Sommer: Durchdringend gießen, dann austrocknen lassen</li>
+                                <li>✓ Im Winter: Die meisten Arten komplett trocken halten</li>
+                                <li>✓ Nie bei praller Sonne oder Hitze gießen</li>
+                                <li>✓ Wasser sollte kalkarm und zimmerwarm sein</li>
+                                <li>✓ Staunässe ist der Feind Nr. 1 - tötet schnell!</li>
+                                <li>✓ Von unten gießen verhindert Fäulnis am Wurzelhals</li>
+                            </ul>
+                        </div>
+                        
+                        <div className="card-small">
+                            <h3 className="font-bold mb-4">☀️ Licht & Temperatur</h3>
+                            <ul className="space-y-2" style={{listStyle: 'none', paddingLeft: 0}}>
+                                <li>✓ Sämlinge: Hell aber keine direkte Sonne</li>
+                                <li>✓ Erwachsene: Die meisten lieben volle Sonne</li>
+                                <li>✓ Gewöhnung wichtig - langsam an Sonne gewöhnen</li>
+                                <li>✓ Winter: Kühl (5-15°C) und hell überwintern</li>
+                                <li>✓ Frost: Nur wenige Arten sind frosthart</li>
+                                <li>✓ Luftzirkulation wichtig gegen Pilze</li>
+                            </ul>
+                        </div>
+                        
+                        <div className="card-small">
+                            <h3 className="font-bold mb-4">🌿 Substrat & Düngung</h3>
+                            <ul className="space-y-2" style={{listStyle: 'none', paddingLeft: 0}}>
+                                <li>✓ Rein mineralisch oder max. 30% Humus</li>
+                                <li>✓ pH-Wert: Die meisten mögen es leicht sauer bis neutral</li>
+                                <li>✓ Drainage ist das A und O</li>
+                                <li>✓ Düngung: Nur in der Wachstumsphase (Apr-Sep)</li>
+                                <li>✓ Kakteendünger verwenden (wenig Stickstoff)</li>
+                                <li>✓ Lieber zu wenig als zu viel düngen</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div className="card-small">
+                        <h3 className="font-bold mb-4">📚 Nützliche Links & Ressourcen</h3>
+                        <div className="grid grid-2 gap-4">
+                            <div>
+                                <h4 className="font-bold mb-2">Foren & Communities</h4>
+                                <ul style={{listStyle: 'none', paddingLeft: 0}}>
+                                    <li>🔗 <a href="https://www.kakteenforum.de" target="_blank" style={{color: '#2563eb'}}>Deutsches Kakteenforum</a></li>
+                                    <li>🔗 <a href="https://www.cactuspro.com" target="_blank" style={{color: '#2563eb'}}>CactusPro (International)</a></li>
+                                    <li>🔗 <a href="https://www.bcss.org.uk" target="_blank" style={{color: '#2563eb'}}>British Cactus & Succulent Society</a></li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 className="font-bold mb-2">Datenbanken & Infos</h4>
+                                <ul style={{listStyle: 'none', paddingLeft: 0}}>
+                                    <li>🔗 <a href="https://www.llifle.com" target="_blank" style={{color: '#2563eb'}}>LLIFLE Encyclopedia</a></li>
+                                    <li>🔗 <a href="https://www.cactiguide.com" target="_blank" style={{color: '#2563eb'}}>CactiGuide</a></li>
+                                    <li>🔗 <a href="http://ralph.cs.cf.ac.uk/Cacti/" target="_blank" style={{color: '#2563eb'}}>BCSS Database</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="card-small">
+                        <h3 className="font-bold mb-4">⚠️ Häufige Fehler vermeiden</h3>
+                        <div className="grid grid-2 gap-4">
+                            <ul style={{listStyle: 'none', paddingLeft: 0}}>
+                                <li>❌ Zu viel gießen - Haupttodesursache!</li>
+                                <li>❌ Zu schnell an Sonne gewöhnen - Sonnenbrand!</li>
+                                <li>❌ Zu warme Überwinterung - keine Blüten!</li>
+                                <li>❌ Zu große Töpfe - Wurzelfäule!</li>
+                            </ul>
+                            <ul style={{listStyle: 'none', paddingLeft: 0}}>
+                                <li>❌ Zu viel Dünger - weiches Wachstum!</li>
+                                <li>❌ Zu wenig Licht - Vergeilung!</li>
+                                <li>❌ Normale Blumenerde - Tod!</li>
+                                <li>❌ Ungeduld - Kakteen wachsen langsam!</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            );
+            
+            const renderDiary = () => (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-green">📝 Tagebuch</h2>
+                    
+                    <div className="card-small">
+                        <h3 className="font-bold mb-4">Neuer Eintrag</h3>
+                        <div className="grid grid-2 gap-4">
+                            <div className="form-group">
+                                <label className="label">Datum:</label>
+                                <input 
+                                    type="date"
+                                    value={diaryForm.date}
+                                    onChange={(e) => setDiaryForm({...diaryForm, date: e.target.value})}
+                                    className="input"
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Art (optional):</label>
+                                <select 
+                                    value={diaryForm.species}
+                                    onChange={(e) => setDiaryForm({...diaryForm, species: e.target.value})}
+                                    className="select"
+                                >
+                                    <option value="">-- Allgemein --</option>
+                                    {species.map(sp => (
+                                        <option key={sp.id} value={sp.id}>{sp.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label className="label">Eintragstyp:</label>
+                            <select 
+                                value={diaryForm.entry_type}
+                                onChange={(e) => setDiaryForm({...diaryForm, entry_type: e.target.value})}
+                                className="select"
+                            >
+                                <option value="general">Allgemein</option>
+                                <option value="watering">Gießen</option>
+                                <option value="fertilizing">Düngung</option>
+                                <option value="repotting">Umtopfen</option>
+                            </select>
+                        </div>
+                        <div className="form-group">
+                            <label className="label">Notiz:</label>
+                            <textarea 
+                                value={diaryForm.note}
+                                onChange={(e) => setDiaryForm({...diaryForm, note: e.target.value})}
+                                className="textarea"
+                                rows="4"
+                                placeholder="Was ist heute passiert?"
+                            />
+                        </div>
+                        <button onClick={addDiaryEntry} className="btn btn-green">
+                            <Plus /> Eintrag hinzufügen
+                        </button>
+                    </div>
+                    
+                    <div>
+                        <h3 className="font-bold mb-4">Einträge ({diaryEntries.length})</h3>
+                        {diaryEntries.length === 0 ? (
+                            <p className="text-center">Noch keine Einträge vorhanden.</p>
+                        ) : (
+                            <div className="space-y-4">
+                                {diaryEntries.map(entry => (
+                                    <div key={entry.id} className="card-small">
+                                        <div className="flex justify-between items-start">
+                                            <div>
+                                                <div className="font-bold text-green">
+                                                    📅 {entry.date} - {entry.species_name}
+                                                    {entry.entry_type !== 'general' && (
+                                                        <span className="badge badge-success" style={{marginLeft: '0.5rem'}}>
+                                                            {entry.entry_type === 'watering' && '💧 Gießen'}
+                                                            {entry.entry_type === 'fertilizing' && '🌿 Düngung'}
+                                                            {entry.entry_type === 'repotting' && '🪴 Umtopfen'}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <p style={{marginTop: '0.5rem', whiteSpace: 'pre-wrap'}}>{entry.note}</p>
+                                            </div>
+                                            <button
+                                                onClick={() => deleteDiaryEntry(entry.id)}
+                                                className="btn btn-red"
+                                                style={{padding: '0.25rem 0.5rem'}}
+                                            >
+                                                <Trash2 />
+                                            </button>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+            
+            const renderExport = () => (
+                <div className="space-y-6">
+                    <h2 className="text-2xl font-bold text-green">📥 Daten exportieren</h2>
+                    
+                    <div className="card-small text-center">
+                        <h3 className="font-bold mb-4">📦 Kompletter Export</h3>
+                        <p className="mb-4">
+                            Exportiert alle Ihre Daten als ZIP-Datei mit mehreren CSV-Dateien:
+                        </p>
+                        <ul style={{listStyle: 'none', paddingLeft: 0, marginBottom: '1rem'}}>
+                            <li>✓ arten.csv - Alle Kakteen-Arten mit Pflegeinfos</li>
+                            <li>✓ aussaaten.csv - Alle Aussaat-Daten mit Keimraten</li>
+                            <li>✓ pflanzenbestand.csv - Ihr kompletter Pflanzenbestand</li>
+                            <li>✓ tagebuch.csv - Alle Tagebucheinträge</li>
+                        </ul>
+                        <button 
+                            onClick={() => window.location.href = '/api/export/all'}
+                            className="btn btn-green"
+                            style={{fontSize: '1.125rem', padding: '1rem 2rem'}}
+                        >
+                            <Download /> Alles als ZIP herunterladen
+                        </button>
+                    </div>
+                    
+                    <div className="info-box">
+                        <h4 className="font-bold mb-2">💡 Tipp</h4>
+                        <p>
+                            Die exportierten CSV-Dateien können in Excel, LibreOffice oder Google Sheets geöffnet werden.
+                            Nutzen Sie diese Funktion für regelmäßige Backups Ihrer wertvollen Daten!
+                        </p>
+                    </div>
+                </div>
+            );
+            
+            return (
+                <div className="bg-gradient">
+                    <div className="container">
+                        <div className="card">
+                            <div className="header">
+                                <div className="header-flex">
+                                    <div className="header-center">
+                                        <h1 className="text-3xl font-bold">🌵 Kaktus Anzucht System</h1>
+                                        <p style={{margin: '0.5rem 0 0 0', opacity: 0.9}}>
+                                            Professionelles Tracking für Kakteenanzucht
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="tabs">
+                                <button 
+                                    onClick={() => setActiveTab('dashboard')}
+                                    className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
+                                >
+                                    📊 Dashboard
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('species')}
+                                    className={`tab ${activeTab === 'species' ? 'active' : ''}`}
+                                >
+                                    🌵 Arten
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('sowings')}
+                                    className={`tab ${activeTab === 'sowings' ? 'active' : ''}`}
+                                >
+                                    🌱 Aussaat
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('plants')}
+                                    className={`tab ${activeTab === 'plants' ? 'active' : ''}`}
+                                >
+                                    🌿 Bestand
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('care')}
+                                    className={`tab ${activeTab === 'care' ? 'active' : ''}`}
+                                >
+                                    🌡️ Pflege
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('diary')}
+                                    className={`tab ${activeTab === 'diary' ? 'active' : ''}`}
+                                >
+                                    📝 Tagebuch
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('info')}
+                                    className={`tab ${activeTab === 'info' ? 'active' : ''}`}
+                                >
+                                    ℹ️ Info
+                                </button>
+                                <button 
+                                    onClick={() => setActiveTab('export')}
+                                    className={`tab ${activeTab === 'export' ? 'active' : ''}`}
+                                >
+                                    📥 Export
+                                </button>
+                            </div>
+                            
+                            <div className="content">
+                                {loading ? (
+                                    <div className="text-center" style={{padding: '3rem'}}>
+                                        <div style={{fontSize: '2rem'}}>🔄</div>
+                                        <p>Lade Daten...</p>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {activeTab === 'dashboard' && renderDashboard()}
+                                        {activeTab === 'species' && renderSpecies()}
+                                        {activeTab === 'sowings' && renderSowings()}
+                                        {activeTab === 'plants' && renderPlants()}
+                                        {activeTab === 'care' && renderCare()}
+                                        {activeTab === 'diary' && renderDiary()}
+                                        {activeTab === 'info' && renderInfo()}
+                                        {activeTab === 'export' && renderExport()}
+                                    </>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        // App rendern
+        ReactDOM.render(<KaktusCenterApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>

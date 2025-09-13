@@ -1,0 +1,2269 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌵 Kaktus Anzucht System Pro</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 1rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #16a34a, #15803d);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f3f4f6;
+            border-bottom: 2px solid #e5e7eb;
+            overflow-x: auto;
+        }
+        
+        .tab {
+            padding: 1rem 1.5rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: #6b7280;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .tab:hover {
+            background: #e5e7eb;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #16a34a;
+            border-bottom: 3px solid #16a34a;
+        }
+        
+        .content {
+            padding: 2rem;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .label {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .input, .select, .textarea {
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .input:focus, .select:focus, .textarea:focus {
+            outline: none;
+            border-color: #16a34a;
+        }
+        
+        .textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-right: 0.5rem;
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            background: #16a34a;
+            color: white;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            background: #15803d;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover:not(:disabled) {
+            background: #059669;
+        }
+        
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .btn-warning:hover:not(:disabled) {
+            background: #d97706;
+        }
+        
+        .btn-info {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-info:hover:not(:disabled) {
+            background: #2563eb;
+        }
+        
+        .btn-purple {
+            background: #8b5cf6;
+            color: white;
+        }
+        
+        .btn-purple:hover:not(:disabled) {
+            background: #7c3aed;
+        }
+        
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+        
+        .btn-danger:hover:not(:disabled) {
+            background: #b91c1c;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-top: 2rem;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th {
+            background: #f3f4f6;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+            cursor: pointer;
+            user-select: none;
+        }
+        
+        .table th:hover {
+            background: #e5e7eb;
+        }
+        
+        .table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .table tr:hover {
+            background: #f9fafb;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #16a34a;
+        }
+        
+        .stat-label {
+            color: #6b7280;
+            margin-top: 0.5rem;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+        
+        .spinner {
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #16a34a;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #fee2e2;
+            border: 1px solid #fecaca;
+            color: #991b1b;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .success {
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .badge-purple {
+            background: #ede9fe;
+            color: #6d28d9;
+        }
+        
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .care-card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .care-card:hover {
+            border-color: #16a34a;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .care-card h3 {
+            color: #16a34a;
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+        }
+        
+        .care-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        .care-item:hover {
+            background: #f3f4f6;
+        }
+        
+        .care-item input[type="checkbox"] {
+            margin-right: 1rem;
+            margin-top: 0.25rem;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        
+        .care-item-content {
+            flex: 1;
+        }
+        
+        .care-item-title {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 0.25rem;
+        }
+        
+        .care-item-detail {
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        .care-priority {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+        
+        .priority-high {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .priority-medium {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .priority-low {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal h2 {
+            margin-bottom: 1.5rem;
+            color: #1f2937;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+        
+        .date-info {
+            display: inline-block;
+            margin-left: 0.5rem;
+            color: #6b7280;
+            font-size: 0.875rem;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.75rem;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1;
+                min-width: 100px;
+                font-size: 0.875rem;
+                padding: 0.75rem;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useCallback, useMemo } = React;
+        
+        // Haupt-App Komponente
+        const KaktusApp = () => {
+            // States
+            const [activeTab, setActiveTab] = useState('dashboard');
+            const [species, setSpecies] = useState([]);
+            const [sowings, setSowings] = useState([]);
+            const [plants, setPlants] = useState([]);
+            const [diary, setDiary] = useState([]);
+            const [loading, setLoading] = useState(false);
+            const [saving, setSaving] = useState(false);
+            const [error, setError] = useState(null);
+            const [success, setSuccess] = useState(null);
+            const [showGerminationModal, setShowGerminationModal] = useState(false);
+            const [selectedSowing, setSelectedSowing] = useState(null);
+            const [germinationData, setGerminationData] = useState({
+                germination_date: new Date().toISOString().split('T')[0],
+                germinated_count: ''
+            });
+            const [stats, setStats] = useState({
+                overview: {
+                    total_species: 0,
+                    total_sowings: 0,
+                    total_plants: 0,
+                    total_diary_entries: 0
+                }
+            });
+            
+            // Stabile Formular-States
+            const [speciesForm, setSpeciesForm] = useState({
+                name: '',
+                substrate: 'Mineralisch',
+                temperature: '20-25°C',
+                germination_time: '1-4 Wochen',
+                care_notes: '',
+                watering_summer: 'Mäßig, wenn Substrat trocken',
+                watering_winter: 'Sehr sparsam bis gar nicht',
+                light_requirements: 'Hell, aber keine pralle Mittagssonne',
+                temperature_min: '15',
+                temperature_max: '30',
+                special_care: ''
+            });
+            
+            const [sowingForm, setSowingForm] = useState({
+                species: '',
+                sowing_date: new Date().toISOString().split('T')[0],
+                seed_count: '',
+                pot_number: '',
+                notes: ''
+            });
+            
+            const [plantForm, setPlantForm] = useState({
+                species: '',
+                purchase_date: new Date().toISOString().split('T')[0],
+                location: '',
+                substrate: 'Mineralisch',
+                notes: ''
+            });
+            
+            const [diaryForm, setDiaryForm] = useState({
+                date: new Date().toISOString().split('T')[0],
+                species: '',
+                note: '',
+                entry_type: 'general'
+            });
+            
+            // States für Pflege-Tab
+            const [selectedCareSpecies, setSelectedCareSpecies] = useState('');
+            const [plantFilter, setPlantFilter] = useState('all');
+            
+            // States für Tagebuch-Filter
+            const [diaryFilter, setDiaryFilter] = useState('all');
+            const [diarySpeciesFilter, setDiarySpeciesFilter] = useState('');
+            
+            // Hilfsfunktion für Nachrichten
+            const showMessage = (type, message, duration = 5000) => {
+                if (type === 'error') {
+                    setError(message);
+                    setTimeout(() => setError(null), duration);
+                } else {
+                    setSuccess(message);
+                    setTimeout(() => setSuccess(null), duration);
+                }
+            };
+            
+            // Datum formatieren
+            const formatDate = (dateString) => {
+                if (!dateString) return '-';
+                const date = new Date(dateString);
+                return date.toLocaleDateString('de-DE');
+            };
+            
+            // Tage seit Datum berechnen
+            const daysSince = (dateString) => {
+                if (!dateString) return null;
+                const date = new Date(dateString);
+                const today = new Date();
+                const diffTime = Math.abs(today - date);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                return diffDays;
+            };
+            
+            // Daten laden - ohne useCallback für Stabilität
+            const loadData = async () => {
+                setLoading(true);
+                
+                try {
+                    const [speciesRes, sowingsRes, plantsRes, diaryRes, statsRes] = await Promise.all([
+                        fetch('/api/species').then(r => r.json()),
+                        fetch('/api/sowings').then(r => r.json()),
+                        fetch('/api/plants').then(r => r.json()),
+                        fetch('/api/diary').then(r => r.json()),
+                        fetch('/api/dashboard-stats').then(r => r.json())
+                    ]);
+                    
+                    setSpecies(speciesRes || []);
+                    setSowings(sowingsRes || []);
+                    setPlants(plantsRes || []);
+                    setDiary(diaryRes || []);
+                    setStats(statsRes || { overview: { total_species: 0, total_sowings: 0, total_plants: 0, total_diary_entries: 0 } });
+                } catch (err) {
+                    console.error('Ladefehler:', err);
+                    showMessage('error', 'Verbindung zum Server fehlgeschlagen.');
+                } finally {
+                    setLoading(false);
+                }
+            };
+            
+            useEffect(() => {
+                loadData();
+            }, []);
+            
+            // Art hinzufügen
+            const addSpecies = async (e) => {
+                e.preventDefault();
+                
+                if (!speciesForm.name.trim()) {
+                    showMessage('error', 'Bitte geben Sie einen Artennamen ein');
+                    return;
+                }
+                
+                setSaving(true);
+                
+                try {
+                    const response = await fetch('/api/species', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(speciesForm)
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Fehler beim Speichern');
+                    }
+                    
+                    showMessage('success', `Art "${speciesForm.name}" erfolgreich hinzugefügt!`);
+                    setSpeciesForm({
+                        name: '',
+                        substrate: 'Mineralisch',
+                        temperature: '20-25°C',
+                        germination_time: '1-4 Wochen',
+                        care_notes: '',
+                        watering_summer: 'Mäßig, wenn Substrat trocken',
+                        watering_winter: 'Sehr sparsam bis gar nicht',
+                        light_requirements: 'Hell, aber keine pralle Mittagssonne',
+                        temperature_min: '15',
+                        temperature_max: '30',
+                        special_care: ''
+                    });
+                    await loadData();
+                } catch (err) {
+                    showMessage('error', err.message);
+                } finally {
+                    setSaving(false);
+                }
+            };
+            
+            // Art löschen mit Bestätigung
+            const deleteSpecies = async (id, name) => {
+                const firstConfirm = confirm(`⚠️ Wirklich löschen: ${name}?`);
+                if (!firstConfirm) return;
+                
+                const secondConfirm = confirm(`🔴 LETZTE WARNUNG!\n\nAlle Aussaaten und Pflanzen dieser Art werden ebenfalls gelöscht!\n\nWirklich "${name}" unwiderruflich löschen?`);
+                if (!secondConfirm) return;
+                
+                try {
+                    const response = await fetch(`/api/species/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (!response.ok) {
+                        const data = await response.json();
+                        throw new Error(data.error || 'Fehler beim Löschen');
+                    }
+                    
+                    showMessage('success', 'Art erfolgreich gelöscht!');
+                    await loadData();
+                } catch (err) {
+                    showMessage('error', err.message);
+                }
+            };
+            
+            // Aussaat hinzufügen
+            const addSowing = async (e) => {
+                e.preventDefault();
+                
+                if (!sowingForm.species || !sowingForm.seed_count || !sowingForm.pot_number) {
+                    showMessage('error', 'Bitte füllen Sie alle Pflichtfelder aus');
+                    return;
+                }
+                
+                setSaving(true);
+                
+                try {
+                    const response = await fetch('/api/sowings', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(sowingForm)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Fehler beim Speichern');
+                    }
+                    
+                    const selectedSpecies = species.find(s => s.id == sowingForm.species);
+                    showMessage('success', `Aussaat von ${selectedSpecies?.name} erfolgreich hinzugefügt!`);
+                    setSowingForm({
+                        species: '',
+                        sowing_date: new Date().toISOString().split('T')[0],
+                        seed_count: '',
+                        pot_number: '',
+                        notes: ''
+                    });
+                    await loadData();
+                } catch (err) {
+                    showMessage('error', err.message);
+                } finally {
+                    setSaving(false);
+                }
+            };
+            
+            // Aussaat löschen
+            const deleteSowing = async (id, name) => {
+                const firstConfirm = confirm(`⚠️ Aussaat löschen: ${name}?`);
+                if (!firstConfirm) return;
+                
+                const secondConfirm = confirm(`🔴 Wirklich löschen?\n\nDiese Aktion kann nicht rückgängig gemacht werden!`);
+                if (!secondConfirm) return;
+                
+                try {
+                    const response = await fetch(`/api/sowings/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Fehler beim Löschen');
+                    }
+                    
+                    showMessage('success', 'Aussaat gelöscht!');
+                    await loadData();
+                } catch (err) {
+                    showMessage('error', err.message);
+                }
+            };
+            
+            // Keimung markieren Modal öffnen
+            const openGerminationModal = (sowing) => {
+                setSelectedSowing(sowing);
+                setGerminationData({
+                    germination_date: new Date().toISOString().split('T')[0],
+                    germinated_count: sowing.seed_count
+                });
+                setShowGerminationModal(true);
+            };
+            
+            // Keimung aktualisieren und in Bestand übernehmen
+            const markAsGerminated = async () => {
+                if (!germinationData.germinated_count || germinationData.germinated_count < 1) {
+                    showMessage('error', 'Bitte geben Sie die Anzahl gekeimter Samen ein');
+                    return;
+                }
+                
+                setSaving(true);
+                
+                try {
+                    // Keimung aktualisieren
+                    const response = await fetch(`/api/sowings/${selectedSowing.id}/germinate`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(germinationData)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Fehler beim Aktualisieren');
+                    }
+                    
+                    // Automatisch in Bestand übernehmen
+                    const plantData = {
+                        species: selectedSowing.species,
+                        purchase_date: germinationData.germination_date,
+                        location: `Anzucht - Topf ${selectedSowing.pot_number}`,
+                        substrate: 'Mineralisch (Anzucht)',
+                        notes: `Aus Aussaat vom ${selectedSowing.sowing_date}. ${germinationData.germinated_count} von ${selectedSowing.seed_count} Samen gekeimt.`
+                    };
+                    
+                    await fetch('/api/plants', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(plantData)
+                    });
+                    
+                    showMessage('success', `✅ Keimung markiert und in Bestand übernommen!`);
+                    setShowGerminationModal(false);
+                    await loadData();
+                } catch (err) {
+                    showMessage('error', err.message);
+                } finally {
+                    setSaving(false);
+                }
+            };
+            
+            // Pikieren (aus Aussaat einzelne Pflanzen machen)
+            const prickOut = async (sowingId, sowingName) => {
+                const count = prompt(`Wie viele Sämlinge von "${sowingName}" möchten Sie pikieren?`);
+                if (!count || count < 1) return;
+                
+                setSaving(true);
+                
+                try {
+                    // Tagebucheintrag
+                    await fetch('/api/diary', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            date: new Date().toISOString().split('T')[0],
+                            species: '',
+                            note: `${count} Sämlinge von ${sowingName} pikiert`,
+                            entry_type: 'repotting'
+                        })
+                    });
+                    
+                    showMessage('success', `✅ ${count} Sämlinge pikiert!`);
+                    await loadData();
+                } catch (err) {
+                    showMessage('error', err.message);
+                } finally {
+                    setSaving(false);
+                }
+            };
+            
+            // Pflanze hinzufügen
+            const addPlant = async (e) => {
+                e.preventDefault();
+                
+                if (!plantForm.species) {
+                    showMessage('error', 'Bitte wählen Sie eine Art aus');
+                    return;
+                }
+                
+                setSaving(true);
+                
+                try {
+                    const response = await fetch('/api/plants', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(plantForm)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Fehler beim Speichern');
+                    }
+                    
+                    const selectedSpecies = species.find(s => s.id == plantForm.species);
+                    showMessage('success', `${selectedSpecies?.name} erfolgreich zum Bestand hinzugefügt!`);
+                    setPlantForm({
+                        species: '',
+                        purchase_date: new Date().toISOString().split('T')[0],
+                        location: '',
+                        substrate: 'Mineralisch',
+                        notes: ''
+                    });
+                    await loadData();
+                } catch (err) {
+                    showMessage('error', err.message);
+                } finally {
+                    setSaving(false);
+                }
+            };
+            
+            // Pflanze löschen
+            const deletePlant = async (id, name) => {
+                const firstConfirm = confirm(`⚠️ Pflanze aus Bestand entfernen: ${name}?`);
+                if (!firstConfirm) return;
+                
+                const secondConfirm = confirm(`🔴 Wirklich löschen?\n\nDiese Aktion kann nicht rückgängig gemacht werden!`);
+                if (!secondConfirm) return;
+                
+                try {
+                    const response = await fetch(`/api/plants/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Fehler beim Löschen');
+                    }
+                    
+                    showMessage('success', 'Pflanze aus Bestand entfernt!');
+                    await loadData();
+                } catch (err) {
+                    showMessage('error', err.message);
+                }
+            };
+            
+            // Pflege-Aktion (Gießen, Düngen, Umtopfen)
+            const updatePlantCare = async (plantId, action, plantName) => {
+                // Bei Umtopfen nach Details fragen
+                if (action === 'repotting') {
+                    const details = prompt(`Details zum Umtopfen von "${plantName}":\n(z.B. neuer Topf, neues Substrat)`);
+                    if (!details) return;
+                    
+                    // Tagebucheintrag mit Details
+                    await fetch('/api/diary', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            date: new Date().toISOString().split('T')[0],
+                            species: '',
+                            note: `${plantName} umgetopft: ${details}`,
+                            entry_type: 'repotting'
+                        })
+                    });
+                    
+                    showMessage('success', `✅ ${plantName} umgetopft!`);
+                    await loadData();
+                    return;
+                }
+                
+                setSaving(true);
+                
+                try {
+                    const response = await fetch(`/api/plants/${plantId}`, {
+                        method: 'PATCH',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ [action]: true })
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Fehler beim Aktualisieren');
+                    }
+                    
+                    // Automatisch Tagebucheintrag erstellen
+                    const actionText = action === 'last_watered' ? 'gegossen' : 
+                                      action === 'last_fertilized' ? 'gedüngt' : 'umgetopft';
+                    
+                    await fetch('/api/diary', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            date: new Date().toISOString().split('T')[0],
+                            species: '',
+                            note: `${plantName} ${actionText}`,
+                            entry_type: action === 'last_watered' ? 'watering' : 
+                                       action === 'last_fertilized' ? 'fertilizing' : 'repotting'
+                        })
+                    });
+                    
+                    showMessage('success', `✅ ${plantName} ${actionText}!`);
+                    await loadData();
+                } catch (err) {
+                    showMessage('error', err.message);
+                } finally {
+                    setSaving(false);
+                }
+            };
+            
+            // Tagebucheintrag hinzufügen
+            const addDiaryEntry = async (e) => {
+                e.preventDefault();
+                
+                if (!diaryForm.note.trim()) {
+                    showMessage('error', 'Bitte geben Sie eine Notiz ein');
+                    return;
+                }
+                
+                setSaving(true);
+                
+                try {
+                    const response = await fetch('/api/diary', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(diaryForm)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Fehler beim Speichern');
+                    }
+                    
+                    showMessage('success', 'Tagebucheintrag erfolgreich hinzugefügt!');
+                    setDiaryForm({
+                        date: new Date().toISOString().split('T')[0],
+                        species: '',
+                        note: '',
+                        entry_type: 'general'
+                    });
+                    await loadData();
+                } catch (err) {
+                    showMessage('error', err.message);
+                } finally {
+                    setSaving(false);
+                }
+            };
+            
+            // Tab-Komponenten als stabile Funktionen
+            const renderDashboard = () => (
+                <div>
+                    <div className="section-title">📊 Dashboard</div>
+                    
+                    <div className="stats-grid">
+                        <div className="stat-card">
+                            <div className="stat-value">{stats.overview.total_species}</div>
+                            <div className="stat-label">Arten</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">{stats.overview.total_sowings}</div>
+                            <div className="stat-label">Aussaaten</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">{stats.overview.total_plants}</div>
+                            <div className="stat-label">Pflanzen</div>
+                        </div>
+                        <div className="stat-card">
+                            <div className="stat-value">{stats.overview.total_diary_entries}</div>
+                            <div className="stat-label">Tagebucheinträge</div>
+                        </div>
+                    </div>
+                    
+                    {sowings.filter(s => !s.germinated).length > 0 && (
+                        <div className="info-box">
+                            <h3>🌱 Aktive Aussaaten (nicht gekeimt)</h3>
+                            {sowings.filter(s => !s.germinated).map(s => (
+                                <div key={s.id} style={{padding: '0.5rem 0'}}>
+                                    <strong>{s.species_name}</strong> - Topf {s.pot_number}
+                                    <span className="badge badge-warning" style={{marginLeft: '1rem'}}>
+                                        Tag {s.days_since_sowing}
+                                    </span>
+                                    {s.days_since_sowing > 30 && (
+                                        <span className="badge badge-danger" style={{marginLeft: '0.5rem'}}>
+                                            ⚠️ Prüfen!
+                                        </span>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    
+                    {plants.length > 0 && (
+                        <div className="info-box">
+                            <h3>💧 Gieß-Erinnerungen</h3>
+                            {plants.filter(p => !p.last_watered || p.days_since_watering > 7).map(p => (
+                                <div key={p.id} style={{padding: '0.5rem 0'}}>
+                                    <strong>{p.species_name}</strong> - {p.location || 'Kein Standort'}
+                                    {p.last_watered ? (
+                                        <span className="badge badge-warning" style={{marginLeft: '1rem'}}>
+                                            Vor {p.days_since_watering} Tagen
+                                        </span>
+                                    ) : (
+                                        <span className="badge badge-danger" style={{marginLeft: '1rem'}}>
+                                            Noch nie gegossen
+                                        </span>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            );
+            
+            const renderSpeciesTab = () => (
+                <div>
+                    <div className="section-title">🌵 Kakteen-Arten verwalten</div>
+                    
+                    {error && <div className="error">❌ {error}</div>}
+                    {success && <div className="success">✅ {success}</div>}
+                    
+                    <form onSubmit={addSpecies}>
+                        <div className="form-grid">
+                            <div className="form-group">
+                                <label className="label">Name der Art *</label>
+                                <input
+                                    type="text"
+                                    className="input"
+                                    value={speciesForm.name}
+                                    onChange={(e) => setSpeciesForm(prev => ({...prev, name: e.target.value}))}
+                                    placeholder="z.B. Mammillaria hahniana"
+                                    disabled={saving}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Substrat</label>
+                                <input
+                                    type="text"
+                                    className="input"
+                                    value={speciesForm.substrate}
+                                    onChange={(e) => setSpeciesForm(prev => ({...prev, substrate: e.target.value}))}
+                                    disabled={saving}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Temperatur</label>
+                                <input
+                                    type="text"
+                                    className="input"
+                                    value={speciesForm.temperature}
+                                    onChange={(e) => setSpeciesForm(prev => ({...prev, temperature: e.target.value}))}
+                                    disabled={saving}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Keimdauer</label>
+                                <input
+                                    type="text"
+                                    className="input"
+                                    value={speciesForm.germination_time}
+                                    onChange={(e) => setSpeciesForm(prev => ({...prev, germination_time: e.target.value}))}
+                                    disabled={saving}
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="form-group">
+                            <label className="label">Pflegehinweise</label>
+                            <textarea
+                                className="textarea"
+                                value={speciesForm.care_notes}
+                                onChange={(e) => setSpeciesForm(prev => ({...prev, care_notes: e.target.value}))}
+                                placeholder="Spezielle Pflegehinweise für diese Art..."
+                                disabled={saving}
+                            />
+                        </div>
+                        
+                        <button type="submit" className="btn btn-primary" disabled={saving}>
+                            {saving ? '⏳ Speichert...' : '➕ Art hinzufügen'}
+                        </button>
+                    </form>
+                    
+                    <div className="table-container">
+                        <h3 style={{marginBottom: '1rem'}}>Vorhandene Arten ({species.length})</h3>
+                        {species.length === 0 ? (
+                            <div className="empty-state">
+                                <p>Keine Arten vorhanden</p>
+                            </div>
+                        ) : (
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Substrat</th>
+                                        <th>Temperatur</th>
+                                        <th>Keimdauer</th>
+                                        <th>Aktionen</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {species.map(sp => (
+                                        <tr key={sp.id}>
+                                            <td>
+                                                <strong>{sp.name}</strong>
+                                                {sp.user_created && (
+                                                    <span className="badge badge-success" style={{marginLeft: '0.5rem'}}>
+                                                        Eigene
+                                                    </span>
+                                                )}
+                                            </td>
+                                            <td>{sp.substrate}</td>
+                                            <td>{sp.temperature}</td>
+                                            <td>{sp.germination_time}</td>
+                                            <td>
+                                                {sp.user_created && (
+                                                    <button
+                                                        onClick={() => deleteSpecies(sp.id, sp.name)}
+                                                        className="btn btn-danger btn-small"
+                                                    >
+                                                        🗑️ Löschen
+                                                    </button>
+                                                )}
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+                </div>
+            );
+            
+            const renderSowingsTab = () => (
+                <div>
+                    <div className="section-title">🌱 Aussaat-Tracking</div>
+                    
+                    {error && <div className="error">❌ {error}</div>}
+                    {success && <div className="success">✅ {success}</div>}
+                    
+                    <form onSubmit={addSowing}>
+                        <div className="form-grid">
+                            <div className="form-group">
+                                <label className="label">Art *</label>
+                                <select
+                                    className="select"
+                                    value={sowingForm.species}
+                                    onChange={(e) => setSowingForm(prev => ({...prev, species: e.target.value}))}
+                                    disabled={saving}
+                                >
+                                    <option value="">-- Bitte wählen --</option>
+                                    {species.map(sp => (
+                                        <option key={sp.id} value={sp.id}>{sp.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Aussaat-Datum</label>
+                                <input
+                                    type="date"
+                                    className="input"
+                                    value={sowingForm.sowing_date}
+                                    onChange={(e) => setSowingForm(prev => ({...prev, sowing_date: e.target.value}))}
+                                    disabled={saving}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Anzahl Samen *</label>
+                                <input
+                                    type="number"
+                                    className="input"
+                                    value={sowingForm.seed_count}
+                                    onChange={(e) => setSowingForm(prev => ({...prev, seed_count: e.target.value}))}
+                                    placeholder="z.B. 10"
+                                    disabled={saving}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Topf Nr. *</label>
+                                <input
+                                    type="text"
+                                    className="input"
+                                    value={sowingForm.pot_number}
+                                    onChange={(e) => setSowingForm(prev => ({...prev, pot_number: e.target.value}))}
+                                    placeholder="z.B. A1"
+                                    disabled={saving}
+                                />
+                            </div>
+                        </div>
+                        
+                        <button type="submit" className="btn btn-primary" disabled={saving}>
+                            {saving ? '⏳ Speichert...' : '➕ Aussaat hinzufügen'}
+                        </button>
+                    </form>
+                    
+                    <div className="table-container">
+                        <h3 style={{marginBottom: '1rem'}}>Aussaaten ({sowings.length})</h3>
+                        {sowings.length === 0 ? (
+                            <div className="empty-state">Keine Aussaaten vorhanden</div>
+                        ) : (
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Art</th>
+                                        <th>Datum</th>
+                                        <th>Topf</th>
+                                        <th>Samen</th>
+                                        <th>Status</th>
+                                        <th>Tage</th>
+                                        <th>Aktionen</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {sowings.map(s => (
+                                        <tr key={s.id}>
+                                            <td><strong>{s.species_name}</strong></td>
+                                            <td>{formatDate(s.sowing_date)}</td>
+                                            <td>{s.pot_number}</td>
+                                            <td>{s.seed_count}</td>
+                                            <td>
+                                                {s.germinated ? (
+                                                    <div>
+                                                        <span className="badge badge-success">✅ Gekeimt</span>
+                                                        <div style={{fontSize: '0.75rem', marginTop: '0.25rem'}}>
+                                                            {s.germinated_count}/{s.seed_count} ({s.germination_rate}%)
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <span className="badge badge-warning">⏳ Wartend</span>
+                                                )}
+                                            </td>
+                                            <td>
+                                                <strong>{s.days_since_sowing}</strong>
+                                                {s.days_since_sowing > 30 && !s.germinated && (
+                                                    <span className="care-priority priority-high">Prüfen!</span>
+                                                )}
+                                            </td>
+                                            <td>
+                                                <div className="btn-group">
+                                                    {!s.germinated && (
+                                                        <button
+                                                            onClick={() => openGerminationModal(s)}
+                                                            className="btn btn-success btn-small"
+                                                            disabled={saving}
+                                                        >
+                                                            🌱 Gekeimt
+                                                        </button>
+                                                    )}
+                                                    {s.germinated && (
+                                                        <button
+                                                            onClick={() => prickOut(s.id, s.species_name)}
+                                                            className="btn btn-purple btn-small"
+                                                            disabled={saving}
+                                                            title="Sämlinge pikieren"
+                                                        >
+                                                            🌿 Pikieren
+                                                        </button>
+                                                    )}
+                                                    <button
+                                                        onClick={() => deleteSowing(s.id, s.species_name)}
+                                                        className="btn btn-danger btn-small"
+                                                        disabled={saving}
+                                                    >
+                                                        🗑️
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+                </div>
+            );
+            
+            const renderPlantsTab = () => (
+                <div>
+                    <div className="section-title">🌿 Pflanzenbestand</div>
+                    
+                    {error && <div className="error">❌ {error}</div>}
+                    {success && <div className="success">✅ {success}</div>}
+                    
+                    <form onSubmit={addPlant}>
+                        <div className="form-grid">
+                            <div className="form-group">
+                                <label className="label">Art *</label>
+                                <select
+                                    className="select"
+                                    value={plantForm.species}
+                                    onChange={(e) => setPlantForm(prev => ({...prev, species: e.target.value}))}
+                                    disabled={saving}
+                                >
+                                    <option value="">-- Bitte wählen --</option>
+                                    {species.map(sp => (
+                                        <option key={sp.id} value={sp.id}>{sp.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Kaufdatum</label>
+                                <input
+                                    type="date"
+                                    className="input"
+                                    value={plantForm.purchase_date}
+                                    onChange={(e) => setPlantForm(prev => ({...prev, purchase_date: e.target.value}))}
+                                    disabled={saving}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Standort</label>
+                                <input
+                                    type="text"
+                                    className="input"
+                                    value={plantForm.location}
+                                    onChange={(e) => setPlantForm(prev => ({...prev, location: e.target.value}))}
+                                    placeholder="z.B. Südfenster"
+                                    disabled={saving}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Substrat</label>
+                                <input
+                                    type="text"
+                                    className="input"
+                                    value={plantForm.substrate}
+                                    onChange={(e) => setPlantForm(prev => ({...prev, substrate: e.target.value}))}
+                                    disabled={saving}
+                                />
+                            </div>
+                        </div>
+                        
+                        <button type="submit" className="btn btn-primary" disabled={saving}>
+                            {saving ? '⏳ Speichert...' : '➕ Pflanze hinzufügen'}
+                        </button>
+                    </form>
+                    
+                    <div className="table-container">
+                        <h3 style={{marginBottom: '1rem'}}>Bestand ({plants.length})</h3>
+                        {plants.length === 0 ? (
+                            <div className="empty-state">Keine Pflanzen im Bestand</div>
+                        ) : (
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Art</th>
+                                        <th>Kaufdatum</th>
+                                        <th>Standort</th>
+                                        <th>Gegossen</th>
+                                        <th>Gedüngt</th>
+                                        <th>Im Bestand</th>
+                                        <th>Aktionen</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {plants.map(p => (
+                                        <tr key={p.id}>
+                                            <td><strong>{p.species_name}</strong></td>
+                                            <td>{formatDate(p.purchase_date)}</td>
+                                            <td>{p.location || '-'}</td>
+                                            <td>
+                                                {p.last_watered ? (
+                                                    <span className="date-info">
+                                                        {formatDate(p.last_watered)} 
+                                                        <span className="badge badge-info" style={{marginLeft: '0.5rem'}}>
+                                                            vor {p.days_since_watering} Tagen
+                                                        </span>
+                                                    </span>
+                                                ) : (
+                                                    <span className="badge badge-warning">Nie</span>
+                                                )}
+                                            </td>
+                                            <td>
+                                                {p.last_fertilized ? (
+                                                    <span className="date-info">
+                                                        {formatDate(p.last_fertilized)}
+                                                    </span>
+                                                ) : (
+                                                    <span className="badge badge-warning">Nie</span>
+                                                )}
+                                            </td>
+                                            <td>
+                                                <strong>{p.days_in_collection}</strong> Tage
+                                            </td>
+                                            <td>
+                                                <div className="btn-group">
+                                                    <button
+                                                        onClick={() => updatePlantCare(p.id, 'last_watered', p.species_name)}
+                                                        className="btn btn-info btn-small"
+                                                        disabled={saving}
+                                                        title="Als gegossen markieren"
+                                                    >
+                                                        💧
+                                                    </button>
+                                                    <button
+                                                        onClick={() => updatePlantCare(p.id, 'last_fertilized', p.species_name)}
+                                                        className="btn btn-warning btn-small"
+                                                        disabled={saving}
+                                                        title="Als gedüngt markieren"
+                                                    >
+                                                        🧪
+                                                    </button>
+                                                    <button
+                                                        onClick={() => updatePlantCare(p.id, 'repotting', p.species_name)}
+                                                        className="btn btn-purple btn-small"
+                                                        disabled={saving}
+                                                        title="Umtopfen"
+                                                    >
+                                                        🪴
+                                                    </button>
+                                                    <button
+                                                        onClick={() => deletePlant(p.id, p.species_name)}
+                                                        className="btn btn-danger btn-small"
+                                                        disabled={saving}
+                                                        title="Aus Bestand entfernen"
+                                                    >
+                                                        🗑️
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        )}
+                    </div>
+                </div>
+            );
+            
+            const renderCareTab = () => {
+                // Artenspezifische Pflegedetails abrufen
+                const getSpeciesCareDetails = (speciesId) => {
+                    const sp = species.find(s => s.id == speciesId);
+                    if (!sp) return null;
+                    
+                    return {
+                        name: sp.name,
+                        tasks: [
+                            {
+                                category: 'Substrat',
+                                priority: 'medium',
+                                items: [
+                                    { title: 'Substrat-Typ', detail: sp.substrate || 'Mineralisch' },
+                                    { title: 'Drainage prüfen', detail: 'Wasser sollte schnell ablaufen' },
+                                    { title: 'pH-Wert', detail: 'Leicht sauer bis neutral (6.0-7.0)' }
+                                ]
+                            },
+                            {
+                                category: 'Temperatur',
+                                priority: 'high',
+                                items: [
+                                    { title: 'Optimal', detail: sp.temperature || '20-25°C' },
+                                    { title: 'Min/Max', detail: `${sp.temperature_min || 15}°C - ${sp.temperature_max || 30}°C` },
+                                    { title: 'Winterruhe', detail: 'Kühler stellen (10-15°C)' }
+                                ]
+                            },
+                            {
+                                category: 'Bewässerung',
+                                priority: 'high',
+                                items: [
+                                    { title: 'Sommer', detail: sp.watering_summer || 'Mäßig, wenn Substrat trocken' },
+                                    { title: 'Winter', detail: sp.watering_winter || 'Sehr sparsam bis gar nicht' },
+                                    { title: 'Methode', detail: 'Von unten gießen, Staunässe vermeiden' },
+                                    { title: 'Wasserqualität', detail: 'Kalkarm, Regenwasser ideal' }
+                                ]
+                            },
+                            {
+                                category: 'Licht',
+                                priority: 'medium',
+                                items: [
+                                    { title: 'Bedarf', detail: sp.light_requirements || 'Hell, aber keine pralle Mittagssonne' },
+                                    { title: 'Gewöhnung', detail: 'Langsam an direkte Sonne gewöhnen' },
+                                    { title: 'Winter', detail: 'So hell wie möglich' }
+                                ]
+                            },
+                            {
+                                category: 'Düngung',
+                                priority: 'low',
+                                items: [
+                                    { title: 'Häufigkeit', detail: 'Alle 2-4 Wochen in der Wachstumsphase' },
+                                    { title: 'Typ', detail: 'Kakteendünger, niedrig dosiert' },
+                                    { title: 'Winter', detail: 'Keine Düngung während Winterruhe' }
+                                ]
+                            },
+                            {
+                                category: 'Spezielle Pflege',
+                                priority: 'low',
+                                items: [
+                                    { title: 'Keimung', detail: sp.germination_time || '1-4 Wochen' },
+                                    { title: 'Umtopfen', detail: 'Alle 2-3 Jahre im Frühjahr' },
+                                    { title: 'Besonderheiten', detail: sp.care_notes || sp.special_care || 'Standard-Pflege' }
+                                ]
+                            }
+                        ]
+                    };
+                };
+                
+                const selectedCare = selectedCareSpecies ? getSpeciesCareDetails(selectedCareSpecies) : null;
+                
+                const getFilteredPlants = () => {
+                    if (plantFilter === 'needs-water') {
+                        return plants.filter(p => !p.last_watered || p.days_since_watering > 7);
+                    } else if (plantFilter === 'needs-fertilizer') {
+                        return plants.filter(p => !p.last_fertilized || daysSince(p.last_fertilized) > 30);
+                    }
+                    return plants;
+                };
+                
+                const filteredPlants = getFilteredPlants();
+                
+                // Sammle alle Arten-IDs aus Bestand und Aussaaten
+                const mySpeciesIds = new Set();
+                plants.forEach(p => mySpeciesIds.add(String(p.species)));
+                sowings.forEach(s => mySpeciesIds.add(String(s.species)));
+                
+                // Filtere nur meine Arten
+                const mySpecies = species.filter(sp => mySpeciesIds.has(String(sp.id)));
+                
+                // Zähle wie viele Pflanzen/Aussaaten pro Art
+                const speciesCount = {};
+                mySpecies.forEach(sp => {
+                    const plantCount = plants.filter(p => String(p.species) === String(sp.id)).length;
+                    const sowingCount = sowings.filter(s => String(s.species) === String(sp.id)).length;
+                    speciesCount[sp.id] = {
+                        plants: plantCount,
+                        sowings: sowingCount
+                    };
+                });
+                
+                return (
+                    <div>
+                        <div className="section-title">🌡️ Detaillierte Pflege-Checkliste</div>
+                        
+                        {/* Schnellzugriff Pflanzenbestand */}
+                        <div style={{marginBottom: '3rem'}}>
+                            <h2 style={{fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem', color: '#1f2937'}}>
+                                🏃 Schnellzugriff Pflanzenbestand
+                            </h2>
+                            
+                            <div className="btn-group" style={{marginBottom: '1rem'}}>
+                                <button
+                                    className={`btn ${plantFilter === 'all' ? 'btn-primary' : 'btn-secondary'} btn-small`}
+                                    onClick={() => setPlantFilter('all')}
+                                >
+                                    Alle ({plants.length})
+                                </button>
+                                <button
+                                    className={`btn ${plantFilter === 'needs-water' ? 'btn-info' : 'btn-secondary'} btn-small`}
+                                    onClick={() => setPlantFilter('needs-water')}
+                                >
+                                    💧 Gießen nötig ({plants.filter(p => !p.last_watered || p.days_since_watering > 7).length})
+                                </button>
+                                <button
+                                    className={`btn ${plantFilter === 'needs-fertilizer' ? 'btn-warning' : 'btn-secondary'} btn-small`}
+                                    onClick={() => setPlantFilter('needs-fertilizer')}
+                                >
+                                    🧪 Düngen nötig ({plants.filter(p => !p.last_fertilized || daysSince(p.last_fertilized) > 30).length})
+                                </button>
+                            </div>
+                            
+                            {filteredPlants.length === 0 ? (
+                                <div className="info-box">
+                                    {plantFilter === 'all' ? 'Keine Pflanzen im Bestand' : 'Keine Pflanzen in dieser Kategorie'}
+                                </div>
+                            ) : (
+                                <div style={{display: 'grid', gap: '1rem', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))'}}>
+                                    {filteredPlants.map(p => {
+                                        const needsWater = !p.last_watered || p.days_since_watering > 7;
+                                        const needsFertilizer = !p.last_fertilized || daysSince(p.last_fertilized) > 30;
+                                        
+                                        return (
+                                            <div key={p.id} className="care-card" style={{
+                                                border: needsWater ? '2px solid #3b82f6' : 
+                                                       needsFertilizer ? '2px solid #f59e0b' : '2px solid #e5e7eb'
+                                            }}>
+                                                <div style={{marginBottom: '1rem'}}>
+                                                    <strong style={{fontSize: '1.1rem', color: '#16a34a'}}>
+                                                        {p.species_name}
+                                                    </strong>
+                                                    {p.location && (
+                                                        <span style={{marginLeft: '0.5rem', color: '#6b7280', fontSize: '0.875rem'}}>
+                                                            📍 {p.location}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                
+                                                <div style={{display: 'grid', gap: '0.5rem', marginBottom: '1rem'}}>
+                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                        <span>💧</span>
+                                                        {p.last_watered ? (
+                                                            <span style={{fontSize: '0.875rem'}}>
+                                                                Vor {p.days_since_watering} Tagen
+                                                                {p.days_since_watering > 14 && (
+                                                                    <span className="badge badge-danger" style={{marginLeft: '0.5rem'}}>
+                                                                        Dringend!
+                                                                    </span>
+                                                                )}
+                                                            </span>
+                                                        ) : (
+                                                            <span className="badge badge-warning">Noch nie gegossen</span>
+                                                        )}
+                                                    </div>
+                                                    
+                                                    <div style={{display: 'flex', alignItems: 'center', gap: '0.5rem'}}>
+                                                        <span>🧪</span>
+                                                        {p.last_fertilized ? (
+                                                            <span style={{fontSize: '0.875rem'}}>
+                                                                Vor {daysSince(p.last_fertilized)} Tagen
+                                                            </span>
+                                                        ) : (
+                                                            <span className="badge badge-warning">Noch nie gedüngt</span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                
+                                                <div className="btn-group">
+                                                    <button
+                                                        onClick={() => updatePlantCare(p.id, 'last_watered', p.species_name)}
+                                                        className={`btn ${needsWater ? 'btn-info' : 'btn-secondary'} btn-small`}
+                                                        disabled={saving}
+                                                        style={{flex: 1}}
+                                                    >
+                                                        💧 Gießen
+                                                    </button>
+                                                    <button
+                                                        onClick={() => updatePlantCare(p.id, 'last_fertilized', p.species_name)}
+                                                        className={`btn ${needsFertilizer ? 'btn-warning' : 'btn-secondary'} btn-small`}
+                                                        disabled={saving}
+                                                        style={{flex: 1}}
+                                                    >
+                                                        🧪 Düngen
+                                                    </button>
+                                                    <button
+                                                        onClick={() => updatePlantCare(p.id, 'repotting', p.species_name)}
+                                                        className="btn btn-purple btn-small"
+                                                        disabled={saving}
+                                                        style={{flex: 1}}
+                                                    >
+                                                        🪴 Umtopfen
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            )}
+                        </div>
+                        
+                        <hr style={{margin: '3rem 0', border: 'none', borderTop: '2px solid #e5e7eb'}} />
+                        
+                        {/* Artenspezifische Pflege */}
+                        <div>
+                            <h2 style={{fontSize: '1.25rem', fontWeight: 'bold', marginBottom: '1rem', color: '#1f2937'}}>
+                                📖 Artenspezifische Pflegeanleitungen
+                            </h2>
+                            
+                            <div className="form-grid" style={{marginBottom: '2rem'}}>
+                                {/* Meine Arten Dropdown */}
+                                <div className="form-group">
+                                    <label className="label" style={{color: '#16a34a', fontWeight: 'bold'}}>
+                                        🌵 Meine Arten (Bestand & Aussaaten)
+                                    </label>
+                                    <select 
+                                        className="select"
+                                        value={selectedCareSpecies}
+                                        onChange={(e) => setSelectedCareSpecies(e.target.value)}
+                                        style={{borderColor: '#16a34a', borderWidth: '2px'}}
+                                    >
+                                        <option value="">-- Wählen Sie aus Ihren Arten --</option>
+                                        {mySpecies.length === 0 ? (
+                                            <option disabled>Noch keine Arten im Bestand/Aussaat</option>
+                                        ) : (
+                                            mySpecies.map(sp => (
+                                                <option key={sp.id} value={sp.id}>
+                                                    {sp.name} 
+                                                    ({speciesCount[sp.id].plants > 0 && `${speciesCount[sp.id].plants} im Bestand`}
+                                                    {speciesCount[sp.id].plants > 0 && speciesCount[sp.id].sowings > 0 && ', '}
+                                                    {speciesCount[sp.id].sowings > 0 && `${speciesCount[sp.id].sowings} Aussaat${speciesCount[sp.id].sowings > 1 ? 'en' : ''}`})
+                                                </option>
+                                            ))
+                                        )}
+                                    </select>
+                                    {mySpecies.length > 0 && (
+                                        <div style={{marginTop: '0.5rem', fontSize: '0.875rem', color: '#6b7280'}}>
+                                            Sie haben {mySpecies.length} verschiedene Arten
+                                        </div>
+                                    )}
+                                </div>
+                                
+                                {/* Alle Arten Dropdown */}
+                                <div className="form-group">
+                                    <label className="label">
+                                        📚 Alle verfügbaren Arten
+                                    </label>
+                                    <select 
+                                        className="select"
+                                        value={selectedCareSpecies}
+                                        onChange={(e) => setSelectedCareSpecies(e.target.value)}
+                                    >
+                                        <option value="">-- Allgemeine Pflege --</option>
+                                        {species.map(sp => {
+                                            const isMySpecies = mySpeciesIds.has(String(sp.id));
+                                            return (
+                                                <option key={sp.id} value={sp.id}>
+                                                    {sp.name}
+                                                    {isMySpecies && ' ✅'}
+                                                </option>
+                                            );
+                                        })}
+                                    </select>
+                                    <div style={{marginTop: '0.5rem', fontSize: '0.875rem', color: '#6b7280'}}>
+                                        ✅ = In Ihrem Bestand/Aussaat
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {selectedCare ? (
+                                <div>
+                                    <h3 style={{color: '#16a34a', marginBottom: '1.5rem'}}>
+                                        Pflege für: {selectedCare.name}
+                                    </h3>
+                                    {selectedCare.tasks.map((task, idx) => (
+                                        <div key={idx} className="care-card">
+                                            <h3>
+                                                {task.category}
+                                                <span className={`care-priority priority-${task.priority}`}>
+                                                    {task.priority === 'high' ? 'Wichtig' : 
+                                                     task.priority === 'medium' ? 'Normal' : 'Optional'}
+                                                </span>
+                                            </h3>
+                                            {task.items.map((item, itemIdx) => (
+                                                <div key={itemIdx} className="care-item">
+                                                    <input type="checkbox" />
+                                                    <div className="care-item-content">
+                                                        <div className="care-item-title">{item.title}</div>
+                                                        <div className="care-item-detail">{item.detail}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div>
+                                    <h3 style={{marginBottom: '1.5rem'}}>Allgemeine Pflege-Checkliste</h3>
+                                    
+                                    <div className="care-card">
+                                        <h3>Tägliche Kontrollen<span className="care-priority priority-high">Wichtig</span></h3>
+                                        <div className="care-item">
+                                            <input type="checkbox" />
+                                            <div className="care-item-content">
+                                                <div className="care-item-title">Substrat-Feuchtigkeit prüfen</div>
+                                                <div className="care-item-detail">Mit Finger testen, ob Gießen nötig</div>
+                                            </div>
+                                        </div>
+                                        <div className="care-item">
+                                            <input type="checkbox" />
+                                            <div className="care-item-content">
+                                                <div className="care-item-title">Schädlingskontrolle</div>
+                                                <div className="care-item-detail">Auf Wollläuse, Spinnmilben achten</div>
+                                            </div>
+                                        </div>
+                                        <div className="care-item">
+                                            <input type="checkbox" />
+                                            <div className="care-item-content">
+                                                <div className="care-item-title">Aussaaten kontrollieren</div>
+                                                <div className="care-item-detail">Luftfeuchtigkeit und Keimung prüfen</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="care-card">
+                                        <h3>Wöchentliche Aufgaben<span className="care-priority priority-medium">Normal</span></h3>
+                                        <div className="care-item">
+                                            <input type="checkbox" />
+                                            <div className="care-item-content">
+                                                <div className="care-item-title">Gießbedarf prüfen</div>
+                                                <div className="care-item-detail">Je nach Jahreszeit und Temperatur</div>
+                                            </div>
+                                        </div>
+                                        <div className="care-item">
+                                            <input type="checkbox" />
+                                            <div className="care-item-content">
+                                                <div className="care-item-title">Pflanzen drehen</div>
+                                                <div className="care-item-detail">Für gleichmäßigen Wuchs</div>
+                                            </div>
+                                        </div>
+                                        <div className="care-item">
+                                            <input type="checkbox" />
+                                            <div className="care-item-content">
+                                                <div className="care-item-title">Temperatur kontrollieren</div>
+                                                <div className="care-item-detail">Besonders bei Wetterumschwung</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="care-card">
+                                        <h3>Monatliche Aufgaben<span className="care-priority priority-low">Optional</span></h3>
+                                        <div className="care-item">
+                                            <input type="checkbox" />
+                                            <div className="care-item-content">
+                                                <div className="care-item-title">Düngen (Wachstumsphase)</div>
+                                                <div className="care-item-detail">Niedrig dosierter Kakteendünger</div>
+                                            </div>
+                                        </div>
+                                        <div className="care-item">
+                                            <input type="checkbox" />
+                                            <div className="care-item-content">
+                                                <div className="care-item-title">Umtopfbedarf prüfen</div>
+                                                <div className="care-item-detail">Wurzeln kontrollieren, Substrat erneuern</div>
+                                            </div>
+                                        </div>
+                                        <div className="care-item">
+                                            <input type="checkbox" />
+                                            <div className="care-item-content">
+                                                <div className="care-item-title">Pflanzen reinigen</div>
+                                                <div className="care-item-detail">Staub vorsichtig entfernen</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                );
+            };
+            
+            const renderDiaryTab = () => {
+                // Gefilterte Einträge berechnen
+                const getFilteredDiary = () => {
+                    let filtered = [...diary];
+                    
+                    // Nach Typ filtern
+                    if (diaryFilter !== 'all') {
+                        filtered = filtered.filter(entry => entry.entry_type === diaryFilter);
+                    }
+                    
+                    // Nach Art filtern
+                    if (diarySpeciesFilter) {
+                        filtered = filtered.filter(entry => 
+                            entry.species == diarySpeciesFilter || 
+                            (entry.species_name && entry.species_name.toLowerCase().includes(diarySpeciesFilter.toLowerCase()))
+                        );
+                    }
+                    
+                    return filtered;
+                };
+                
+                const filteredDiary = getFilteredDiary();
+                
+                // Statistiken für Filter-Buttons
+                const typeStats = {
+                    all: diary.length,
+                    watering: diary.filter(e => e.entry_type === 'watering').length,
+                    fertilizing: diary.filter(e => e.entry_type === 'fertilizing').length,
+                    repotting: diary.filter(e => e.entry_type === 'repotting').length,
+                    general: diary.filter(e => e.entry_type === 'general').length
+                };
+                
+                return (
+                <div>
+                    <div className="section-title">📝 Tagebuch</div>
+                    
+                    {error && <div className="error">❌ {error}</div>}
+                    {success && <div className="success">✅ {success}</div>}
+                    
+                    <form onSubmit={addDiaryEntry}>
+                        <div className="form-grid">
+                            <div className="form-group">
+                                <label className="label">Datum</label>
+                                <input
+                                    type="date"
+                                    className="input"
+                                    value={diaryForm.date}
+                                    onChange={(e) => setDiaryForm(prev => ({...prev, date: e.target.value}))}
+                                    disabled={saving}
+                                />
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Art (optional)</label>
+                                <select
+                                    className="select"
+                                    value={diaryForm.species}
+                                    onChange={(e) => setDiaryForm(prev => ({...prev, species: e.target.value}))}
+                                    disabled={saving}
+                                >
+                                    <option value="">-- Allgemein --</option>
+                                    {species.map(sp => (
+                                        <option key={sp.id} value={sp.id}>{sp.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="form-group">
+                                <label className="label">Typ</label>
+                                <select
+                                    className="select"
+                                    value={diaryForm.entry_type}
+                                    onChange={(e) => setDiaryForm(prev => ({...prev, entry_type: e.target.value}))}
+                                    disabled={saving}
+                                >
+                                    <option value="general">Allgemein</option>
+                                    <option value="watering">Gießen</option>
+                                    <option value="fertilizing">Düngung</option>
+                                    <option value="repotting">Umtopfen</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div className="form-group">
+                            <label className="label">Notiz *</label>
+                            <textarea
+                                className="textarea"
+                                value={diaryForm.note}
+                                onChange={(e) => setDiaryForm(prev => ({...prev, note: e.target.value}))}
+                                placeholder="Was ist heute passiert?"
+                                disabled={saving}
+                            />
+                        </div>
+                        
+                        <button type="submit" className="btn btn-primary" disabled={saving}>
+                            {saving ? '⏳ Speichert...' : '➕ Eintrag hinzufügen'}
+                        </button>
+                    </form>
+                    
+                    <div style={{marginTop: '2rem'}}>
+                        <h3 style={{marginBottom: '1rem'}}>
+                            Einträge ({filteredDiary.length} von {diary.length})
+                        </h3>
+                        
+                        {/* Filter-Buttons */}
+                        <div className="btn-group" style={{marginBottom: '1rem'}}>
+                            <button
+                                className={`btn ${diaryFilter === 'all' ? 'btn-primary' : 'btn-secondary'} btn-small`}
+                                onClick={() => setDiaryFilter('all')}
+                            >
+                                📚 Alle ({typeStats.all})
+                            </button>
+                            <button
+                                className={`btn ${diaryFilter === 'watering' ? 'btn-info' : 'btn-secondary'} btn-small`}
+                                onClick={() => setDiaryFilter('watering')}
+                            >
+                                💧 Gießen ({typeStats.watering})
+                            </button>
+                            <button
+                                className={`btn ${diaryFilter === 'fertilizing' ? 'btn-warning' : 'btn-secondary'} btn-small`}
+                                onClick={() => setDiaryFilter('fertilizing')}
+                            >
+                                🧪 Düngung ({typeStats.fertilizing})
+                            </button>
+                            <button
+                                className={`btn ${diaryFilter === 'repotting' ? 'btn-purple' : 'btn-secondary'} btn-small`}
+                                onClick={() => setDiaryFilter('repotting')}
+                            >
+                                🪴 Umtopfen ({typeStats.repotting})
+                            </button>
+                            <button
+                                className={`btn ${diaryFilter === 'general' ? 'btn-success' : 'btn-secondary'} btn-small`}
+                                onClick={() => setDiaryFilter('general')}
+                            >
+                                📝 Allgemein ({typeStats.general})
+                            </button>
+                        </div>
+                        
+                        {/* Arten-Filter */}
+                        <div className="form-group" style={{maxWidth: '300px', marginBottom: '1rem'}}>
+                            <select 
+                                className="select"
+                                value={diarySpeciesFilter}
+                                onChange={(e) => setDiarySpeciesFilter(e.target.value)}
+                            >
+                                <option value="">-- Alle Arten anzeigen --</option>
+                                {species.map(sp => (
+                                    <option key={sp.id} value={sp.id}>{sp.name}</option>
+                                ))}
+                            </select>
+                        </div>
+                        
+                        {filteredDiary.length === 0 ? (
+                            <div className="empty-state">
+                                {diary.length === 0 
+                                    ? 'Noch keine Einträge vorhanden' 
+                                    : 'Keine Einträge für diese Filter gefunden'}
+                            </div>
+                        ) : (
+                            filteredDiary.map(entry => (
+                                <div key={entry.id} className="info-box" style={{marginBottom: '1rem'}}>
+                                    <strong>{formatDate(entry.date)}</strong> - {entry.species_name || 'Allgemein'}
+                                    {entry.entry_type !== 'general' && (
+                                        <span className={`badge ${
+                                            entry.entry_type === 'watering' ? 'badge-info' :
+                                            entry.entry_type === 'fertilizing' ? 'badge-warning' :
+                                            entry.entry_type === 'repotting' ? 'badge-purple' : 'badge-success'
+                                        }`} style={{marginLeft: '0.5rem'}}>
+                                            {entry.entry_type === 'watering' ? '💧 Gießen' :
+                                             entry.entry_type === 'fertilizing' ? '🧪 Düngung' :
+                                             entry.entry_type === 'repotting' ? '🪴 Umtopfen' : entry.entry_type}
+                                        </span>
+                                    )}
+                                    <p style={{marginTop: '0.5rem'}}>{entry.note}</p>
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+            );
+            };
+            
+            const renderExportTab = () => (
+                <div>
+                    <div className="section-title">📥 Daten exportieren</div>
+                    
+                    <div className="info-box" style={{textAlign: 'center'}}>
+                        <h3>Export als ZIP-Datei</h3>
+                        <p style={{margin: '1rem 0'}}>
+                            Exportiert alle Ihre Daten als CSV-Dateien.
+                        </p>
+                        <button
+                            onClick={() => window.location.href = '/api/export/all'}
+                            className="btn btn-primary"
+                        >
+                            📦 Alles exportieren
+                        </button>
+                    </div>
+                </div>
+            );
+            
+            // Render
+            return (
+                <div className="container">
+                    <div className="card">
+                        <div className="header">
+                            <h1>🌵 Kaktus Anzucht System</h1>
+                            <p>Professionelles Tracking für Ihre Kakteen</p>
+                        </div>
+                        
+                        <div className="tabs">
+                            <button
+                                className={`tab ${activeTab === 'dashboard' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('dashboard')}
+                            >
+                                📊 Dashboard
+                            </button>
+                            <button
+                                className={`tab ${activeTab === 'species' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('species')}
+                            >
+                                🌵 Arten
+                            </button>
+                            <button
+                                className={`tab ${activeTab === 'sowings' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('sowings')}
+                            >
+                                🌱 Aussaat
+                            </button>
+                            <button
+                                className={`tab ${activeTab === 'plants' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('plants')}
+                            >
+                                🌿 Bestand
+                            </button>
+                            <button
+                                className={`tab ${activeTab === 'care' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('care')}
+                            >
+                                🌡️ Pflege
+                            </button>
+                            <button
+                                className={`tab ${activeTab === 'diary' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('diary')}
+                            >
+                                📝 Tagebuch
+                            </button>
+                            <button
+                                className={`tab ${activeTab === 'export' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('export')}
+                            >
+                                📥 Export
+                            </button>
+                        </div>
+                        
+                        <div className="content">
+                            {loading ? (
+                                <div className="loading">
+                                    <div className="spinner"></div>
+                                    <p>Lade Daten...</p>
+                                </div>
+                            ) : (
+                                <>
+                                    {activeTab === 'dashboard' && renderDashboard()}
+                                    {activeTab === 'species' && renderSpeciesTab()}
+                                    {activeTab === 'sowings' && renderSowingsTab()}
+                                    {activeTab === 'plants' && renderPlantsTab()}
+                                    {activeTab === 'care' && renderCareTab()}
+                                    {activeTab === 'diary' && renderDiaryTab()}
+                                    {activeTab === 'export' && renderExportTab()}
+                                </>
+                            )}
+                        </div>
+                    </div>
+                    
+                    {/* Keimung Modal */}
+                    {showGerminationModal && (
+                        <div className="modal-overlay">
+                            <div className="modal">
+                                <h2>🌱 Keimung markieren</h2>
+                                <p style={{marginBottom: '1.5rem'}}>
+                                    <strong>{selectedSowing?.species_name}</strong> - Topf {selectedSowing?.pot_number}
+                                </p>
+                                
+                                <div className="form-group">
+                                    <label className="label">Keim-Datum</label>
+                                    <input
+                                        type="date"
+                                        className="input"
+                                        value={germinationData.germination_date}
+                                        onChange={(e) => setGerminationData({...germinationData, germination_date: e.target.value})}
+                                    />
+                                </div>
+                                
+                                <div className="form-group">
+                                    <label className="label">
+                                        Anzahl gekeimter Samen (von {selectedSowing?.seed_count})
+                                    </label>
+                                    <input
+                                        type="number"
+                                        className="input"
+                                        value={germinationData.germinated_count}
+                                        onChange={(e) => setGerminationData({...germinationData, germinated_count: e.target.value})}
+                                        min="1"
+                                        max={selectedSowing?.seed_count}
+                                    />
+                                </div>
+                                
+                                <div style={{background: '#f0fdf4', padding: '1rem', borderRadius: '6px', marginTop: '1rem'}}>
+                                    <p style={{color: '#166534'}}>
+                                        ✅ Die Aussaat wird automatisch in den Bestand übernommen!
+                                    </p>
+                                </div>
+                                
+                                <div className="modal-buttons">
+                                    <button
+                                        className="btn btn-secondary"
+                                        onClick={() => setShowGerminationModal(false)}
+                                        disabled={saving}
+                                    >
+                                        Abbrechen
+                                    </button>
+                                    <button
+                                        className="btn btn-success"
+                                        onClick={markAsGerminated}
+                                        disabled={saving}
+                                    >
+                                        {saving ? '⏳ Speichert...' : '✅ Keimung bestätigen'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+        
+        // App rendern
+        ReactDOM.render(<KaktusApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
